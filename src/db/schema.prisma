@@ -8,11 +8,158 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum ProjectStatus {
+  open
+  assigned
+  completed
+  cancelled
+}
+
+enum Clearance{
+  dev
+  client
+}
+
+enum Gender {
+  man
+  woman
+  other
+}
+
+enum Milestones{
+    highschool
+    diploma
+    bachelors
+    masters
+    phd
+}
+
 model User {
   id    String     @id @default(uuid())
   email String  @unique
   name  String?
-  clearance String
+  clearance Clearance
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
+  bids Bid[]
+  createdProjects Project[] @relation("ProjectCreator")
+  developerProjects Project[] @relation("ProjectDeveloper")
+  sentMessages Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  initiatedConversations Conversation[] @relation("InitiatedConversations")
+  participatingConversations Conversation[] @relation("ParticipatingConversations")
+  givenReviews Review[] @relation("GivenReviews")
+  receivedReviews Review[] @relation("ReceivedReviews")
+  certifications Certification[]
+  workexperiences WorkExperience[]
+  profilePicture String
+  selfieCheckPhoto String
+  idPhoto String
+  dob DateTime
+  gender Gender
+  location String
+  skills String[]
+  educations Education[]
+  portfolioProjects PortfolioProject[]
+}
+
+model Project {
+  id    String     @id @default(uuid())
+  title String
+  budget Int
+  skills String[]
+  status ProjectStatus @default(open)
+  createdAt DateTime @default(now())
+  creator User @relation("ProjectCreator" , fields: [creatorId] , references:[id])
+  creatorId String
+  bids Bid[]
+  details String
+  developer User? @relation("ProjectDeveloper" , fields: [developerId] , references:[id])
+  developerId String?
+}
+
+model Bid{
+  id    String     @id @default(uuid())
+  bidder User @relation(fields: [bidderId] , references:[id])
+  bidderId String
+  project Project @relation(fields: [projectId] , references:[id])
+  projectId String
+  createdAt DateTime @default(now())
+  price Int
+  details String
+  
+  @@unique([bidderId, projectId])
+}
+
+model Message {
+  id    String     @id @default(uuid())
+  sender User @relation("SentMessages", fields: [senderId], references: [id])
+  senderId String
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+  content String
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id    String     @id @default(uuid())
+  sender User @relation("InitiatedConversations", fields: [senderId], references: [id])
+  senderId String
+  receiver User @relation("ParticipatingConversations", fields: [receiverId], references: [id])
+  receiverId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  
+  @@unique([senderId, receiverId])
+}
+
+model Review {
+  id    String     @id @default(uuid())
+  giver User @relation("GivenReviews", fields: [giverId], references: [id])
+  giverId String
+  receiver User @relation("ReceivedReviews", fields: [receiverId], references: [id])
+  receiverId String
+  comment String
+  rating Int
+  createdAt DateTime @default(now())
+  
+  @@unique([giverId, receiverId])
+}
+
+model Certification {
+  id    String     @id @default(uuid())
+  title String
+  description String
+  proofUrl  String
+  user User @relation(fields: [userId] , references:[id])
+  userId String
+}
+
+model PortfolioProject {
+  id    String     @id @default(uuid())
+  title String
+  description String
+  links String[]
+  images  String[]
+  user User @relation(fields: [userId] , references:[id])
+  userId String
+}
+
+model WorkExperience {
+  id    String     @id @default(uuid())
+  title String
+  description String
+  company String
+  user User @relation(fields: [userId] , references:[id])
+  userId String
+}
+
+model Education{
+  id    String     @id @default(uuid())
+  degree Milestones
+  institution String
+  proof String
+  score String
+  user User @relation(fields: [userId] , references:[id])
+  userId String
 }

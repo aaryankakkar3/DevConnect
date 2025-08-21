@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { auth } = await createClient();
-    const { data, error } = await auth.signUp({
+    const { client } = createClient(request);
+    const { data, error } = await client.auth.signUp({
       email,
       password,
     });

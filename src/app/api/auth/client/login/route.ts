@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { auth } = await createClient();
-    const { error } = await auth.signInWithPassword({
+    const { client } = createClient(request);
+    const { error } = await client.auth.signInWithPassword({
       email,
       password,
     });

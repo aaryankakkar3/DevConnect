@@ -4,8 +4,8 @@ import { handleError } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const { auth } = await createClient();
-    const { error } = await auth.signOut();
+    const { client } = createClient(request);
+    const { error } = await client.auth.signOut();
 
     if (error) throw error;
 

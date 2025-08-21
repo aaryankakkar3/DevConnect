@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function createClient() {
-  const cookieStore = await cookies();
+// For API routes
+export function createClient(request: NextRequest, response?: NextResponse) {
+  const res = response || NextResponse.next();
 
   const client = createServerClient(
     process.env.SUPABASE_URL!,
@@ -10,29 +11,26 @@ export async function createClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {}
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options);
+          });
         },
       },
     }
   );
-  return client;
-}
 
-export async function getUser() {
-  const { auth } = await createClient();
-  const userObject = await auth.getUser();
-
-  if (userObject.error) {
-    console.log(userObject.error);
-    return null;
+  // Support for Authorization header (Postman testing)
+  const authHeader = request.headers.get("authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    client.auth.setSession({
+      access_token: token,
+      refresh_token: "", // Not needed for most operations
+    });
   }
 
-  return userObject.data.user;
+  return { client, response: res };
 }
