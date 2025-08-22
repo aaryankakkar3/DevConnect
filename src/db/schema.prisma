@@ -1,7 +1,6 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
@@ -52,12 +51,12 @@ model User {
   receivedReviews Review[] @relation("ReceivedReviews")
   certifications Certification[]
   workexperiences WorkExperience[]
-  profilePicture String
-  selfieCheckPhoto String
-  idPhoto String
-  dob DateTime
-  gender Gender
-  location String
+  profilePicture String?
+  selfieCheckPhoto String?
+  idPhoto String?
+  dob DateTime?
+  gender Gender?
+  location String?
   skills String[]
   educations Education[]
   portfolioProjects PortfolioProject[]
@@ -66,7 +65,7 @@ model User {
 model Project {
   id    String     @id @default(uuid())
   title String
-  budget Int
+  budget Int @db.Integer
   skills String[]
   status ProjectStatus @default(open)
   createdAt DateTime @default(now())
@@ -74,7 +73,7 @@ model Project {
   creatorId String
   bids Bid[]
   details String
-  developer User? @relation("ProjectDeveloper" , fields: [developerId] , references:[id])
+  developer User? @relation("ProjectDeveloper" , fields: [developerId] , references:[id], onDelete: SetNull)
   developerId String?
 }
 
@@ -85,8 +84,9 @@ model Bid{
   project Project @relation(fields: [projectId] , references:[id])
   projectId String
   createdAt DateTime @default(now())
-  price Int
+  price Int @db.Integer
   details String
+  time Int @db.Integer
   
   @@unique([bidderId, projectId])
 }
@@ -97,7 +97,7 @@ model Message {
   senderId String
   receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
   receiverId String
-  content String
+  content String @db.VarChar(5000)
   createdAt DateTime @default(now())
 }
 
@@ -119,8 +119,8 @@ model Review {
   giverId String
   receiver User @relation("ReceivedReviews", fields: [receiverId], references: [id])
   receiverId String
-  comment String
-  rating Int
+  comment String @db.VarChar(2000)
+  rating Int @db.Integer
   createdAt DateTime @default(now())
   
   @@unique([giverId, receiverId])
@@ -128,38 +128,38 @@ model Review {
 
 model Certification {
   id    String     @id @default(uuid())
-  title String
-  description String
-  proofUrl  String
-  user User @relation(fields: [userId] , references:[id])
+  title String @db.VarChar(200)
+  description String @db.VarChar(1000)
+  proofUrl  String @db.VarChar(500)
+  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
 }
 
 model PortfolioProject {
   id    String     @id @default(uuid())
-  title String
-  description String
+  title String @db.VarChar(200)
+  description String @db.VarChar(2000)
   links String[]
   images  String[]
-  user User @relation(fields: [userId] , references:[id])
+  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
 }
 
 model WorkExperience {
   id    String     @id @default(uuid())
-  title String
-  description String
-  company String
-  user User @relation(fields: [userId] , references:[id])
+  title String @db.VarChar(200)
+  description String @db.VarChar(2000)
+  company String @db.VarChar(200)
+  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
 }
 
 model Education{
   id    String     @id @default(uuid())
   degree Milestones
-  institution String
-  proof String
-  score String
-  user User @relation(fields: [userId] , references:[id])
+  institution String @db.VarChar(200)
+  proof String @db.VarChar(500)
+  score String @db.VarChar(50)
+  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
 }
