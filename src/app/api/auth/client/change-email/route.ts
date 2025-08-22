@@ -29,6 +29,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if new email is the same as current email
+    if (user.email === newEmail) {
+      return NextResponse.json(
+        { errorMessage: "New email must be different from current email" },
+        { status: 400 }
+      );
+    }
+
     // Update email in Supabase Auth
     const { error } = await client.auth.updateUser({
       email: newEmail,

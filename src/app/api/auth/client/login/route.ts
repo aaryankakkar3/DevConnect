@@ -4,6 +4,19 @@ import { handleError } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
+    const { client, response } = createClient(request, NextResponse.next());
+
+    // Check if user is already logged in
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+    if (user) {
+      return NextResponse.json(
+        { errorMessage: "User is already logged in" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
 
@@ -14,7 +27,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { client } = createClient(request);
     const { error } = await client.auth.signInWithPassword({
       email,
       password,
@@ -22,7 +34,16 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ errorMessage: null });
+    // Create a new response with the session cookies
+    const successResponse = NextResponse.json({ errorMessage: null });
+
+    // Copy cookies from the auth response
+    const cookies = response.headers.getSetCookie();
+    cookies.forEach((cookie) => {
+      successResponse.headers.append("Set-Cookie", cookie);
+    });
+
+    return successResponse;
   } catch (error) {
     const errorResponse = handleError(error);
     return NextResponse.json(errorResponse, { status: 400 });

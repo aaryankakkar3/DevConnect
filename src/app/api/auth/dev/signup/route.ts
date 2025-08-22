@@ -5,6 +5,19 @@ import { prisma } from "@/db/prismaClient";
 
 export async function POST(request: NextRequest) {
   try {
+    const { client } = createClient(request);
+
+    // Check if user is already logged in
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+    if (user) {
+      return NextResponse.json(
+        { errorMessage: "User is already logged in" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
 
@@ -15,7 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { client } = createClient(request);
     const { data, error } = await client.auth.signUp({
       email,
       password,
