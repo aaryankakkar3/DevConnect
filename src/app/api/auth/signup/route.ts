@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/db/authServer.ts";
 import { handleError } from "@/lib/utils";
 import { prisma } from "@/db/prismaClient";
+import { validateSignupForm } from "@/lib/validation";
+import { Clearance } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,11 +21,49 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, password } = body;
+    const {
+      email,
+      password,
+      fullName,
+      contactNumber,
+      confirmPassword,
+      isClient,
+    } = body;
 
-    if (!email || !password) {
+    // Validate all required fields are present
+    if (
+      !email ||
+      !password ||
+      !fullName ||
+      !contactNumber ||
+      !confirmPassword ||
+      typeof isClient !== "boolean"
+    ) {
       return NextResponse.json(
-        { errorMessage: "Email and password are required" },
+        { errorMessage: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    let clearance: Clearance;
+    if (isClient) {
+      clearance = Clearance.client;
+    } else {
+      clearance = Clearance.dev;
+    }
+
+    // Validate form data using shared validation logic
+    const validation = validateSignupForm({
+      fullName,
+      email,
+      contactNumber,
+      password,
+      confirmPassword,
+    });
+
+    if (!validation.isValid) {
+      return NextResponse.json(
+        { errorMessage: "Validation failed", errors: validation.errors },
         { status: 400 }
       );
     }
@@ -42,7 +82,9 @@ export async function POST(request: NextRequest) {
       data: {
         id: userId,
         email,
-        clearance: "dev",
+        name: fullName,
+        contactNumber,
+        clearance: clearance,
       },
     });
 

@@ -18,6 +18,7 @@ enum ProjectStatus {
 enum Clearance{
   dev
   client
+  admin
 }
 
 enum Gender {
@@ -38,6 +39,7 @@ model User {
   id    String     @id @default(uuid())
   email String  @unique
   name  String?
+  contactNumber String?
   clearance Clearance
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
