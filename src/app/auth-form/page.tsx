@@ -56,6 +56,7 @@ function FormInput({
         {(name === "password" || name === "confirmPassword") && (
           <button
             type="button"
+            className="cursor-pointer"
             onClick={() => setPasswordVisible(!passwordVisible)}
           >
             {passwordVisible ? <EyeOff /> : <Eye />}
@@ -278,10 +279,8 @@ function AuthForm() {
   return (
     <div className="flex flex-row h-screen w-screen">
       <div className="w-[55%] flex flex-col justify-center items-start gap-6 p-6 ">
-        <h1 className="text-xl font-titles ">
-          {isLogin ? "Login" : "Sign Up"}
-        </h1>
-        <p className="text-s font-body w-75">
+        <h1 className="text-xl">{isLogin ? "Login" : "Sign Up"}</h1>
+        <p className="text-s  w-75">
           {isLogin
             ? "Login to pick up right where you left off."
             : "Sign up to hire talent or find work. Get started in just a few minutes."}
@@ -307,7 +306,7 @@ function AuthForm() {
           >
             <button
               type="button"
-              className={`px-20 py-5 rounded-full cursor-pointer ${
+              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bgdark ${
                 isClient ? activeFormType : ""
               }`}
               onClick={() => setIsClient(true)}
@@ -316,7 +315,7 @@ function AuthForm() {
             </button>
             <button
               type="button"
-              className={`px-20 py-5 rounded-full cursor-pointer ${
+              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bgdark ${
                 !isClient ? activeFormType : ""
               }`}
               onClick={() => setIsClient(false)}
@@ -387,7 +386,7 @@ function AuthForm() {
           <div className="w-full flex flex-row justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-accent rounded-xl text-bgdark font-semibold cursor-pointer"
+              className="px-6 py-3 bg-accent rounded-xl text-bgdark font-semibold cursor-pointer hover:opacity-50"
             >
               {isLogin ? "Login" : "Submit"}
             </button>
@@ -400,7 +399,7 @@ function AuthForm() {
               : "Already have an account? "}
             <a
               href="#"
-              className="text-accent"
+              className="text-accent hover:underline"
               onClick={() => [
                 !isSigningUpFurther
                   ? !isLogin

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -5,7 +6,7 @@
   --bgdark: #022129;
   --bglight: #082b34;
   --white: #ffffff;
-  --muted: #808080;
+  --muted: #666666;
   --accent: #7adaac;
 
   /* Font sizes */
@@ -14,7 +15,6 @@
   --font-s: 1rem; /* 16px */
 
   /* Font families */
-  --font-titles: "Comic Sans", serif;
   --font-body: "Nunito", sans-serif;
 }
 
@@ -32,11 +32,11 @@
   --text-s: var(--font-s);
 
   /* Font families */
-  --font-family-titles: var(--font-titles);
-  --font-family-body: var(--font-body);
+  --font-family-body: "Nunito", sans-serif;
 }
 
 body {
   background: var(--bgdark);
   color: var(--color-white);
+  font-family: var(--font-family-body);
 }
