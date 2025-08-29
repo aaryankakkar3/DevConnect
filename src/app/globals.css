@@ -27,6 +27,8 @@
   --color-white: var(--white);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-softaccent: var(--softaccent);
+  --color-muted2: var(--muted2);
 
   /* Font sizes */
   --text-xl: var(--font-xl);
