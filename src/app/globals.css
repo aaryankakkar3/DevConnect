@@ -3,11 +3,13 @@
 
 :root {
   /* Background colors */
-  --bgdark: #022129;
-  --bglight: #082b34;
+  --bgdark: #0d0d0d;
+  --bglight: #262626;
   --white: #ffffff;
-  --muted: #666666;
+  --muted: #404040;
+  --muted2: #cccccc;
   --accent: #7adaac;
+  --softaccent: #b7ebd1;
 
   /* Font sizes */
   --font-xl: 6rem; /* 96px */

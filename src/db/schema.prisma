@@ -136,6 +136,8 @@ model Certification {
   proofUrl  String @db.VarChar(500)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
+  start DateTime
+  end DateTime
 }
 
 model PortfolioProject {
@@ -155,6 +157,8 @@ model WorkExperience {
   company String @db.VarChar(200)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
+  start DateTime
+  end DateTime
 }
 
 model Education{
@@ -165,4 +169,6 @@ model Education{
   score String @db.VarChar(50)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
+  start DateTime
+  end DateTime
 }
