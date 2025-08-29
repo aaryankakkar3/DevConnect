@@ -45,9 +45,9 @@ function PortfolioProjectCard({
   };
 
   return (
-    <div className="flex flex-col w-75 h-fit p-3 gap-3 border-2 border-bglight">
+    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
       <div
-        className="relative w-69 h-38.75 overflow-hidden"
+        className="relative w-full h-48 overflow-hidden"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

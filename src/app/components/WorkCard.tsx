@@ -16,7 +16,7 @@ function WorkCard({
   proofLink: string;
 }) {
   return (
-    <div className="flex flex-col w-75 h-fit p-3 gap-3 border-2 border-bglight">
+    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
       <div className="text-accent ">
         {title}
         <br />@{company}

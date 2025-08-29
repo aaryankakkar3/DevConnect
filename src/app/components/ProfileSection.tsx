@@ -6,6 +6,7 @@ import CertificationCard from "./CertificationCard";
 import ReviewCard from "./ReviewCard";
 
 function ProfileSection({ type }: { type: string }) {
+  // Initializing empty arrays to prevent errors
   let ProjectsData = [
     {
       id: 0,
@@ -70,15 +71,13 @@ function ProfileSection({ type }: { type: string }) {
           "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
         images: [
           "https://www.polytec.com.au/img/products/960-960/mercurio-grey.jpg",
-          "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=960&h=960&fit=crop",
           "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=960&h=960&fit=crop",
         ],
         links: [
-          "https://www.lipsum.com/",
           "https://github.com/example/project1",
           "https://project1-demo.netlify.app",
         ],
-        linkLabels: ["Lorem Ipsum", "GitHub Repo", "Live Demo"],
+        linkLabels: ["GitHub Repo", "Live Demo"],
       },
       {
         id: 2,
@@ -90,12 +89,8 @@ function ProfileSection({ type }: { type: string }) {
           "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=960&h=960&fit=crop",
           "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=960&h=960&fit=crop",
         ],
-        links: [
-          "https://www.lipsum.com/",
-          "https://github.com/example/project2",
-          "https://project2-demo.vercel.app",
-        ],
-        linkLabels: ["Lorem Ipsum", "GitHub Repo", "Live Demo"],
+        links: ["https://project2-demo.vercel.app"],
+        linkLabels: ["Lorem Ipsum"],
       },
       {
         id: 3,
@@ -261,7 +256,7 @@ function ProfileSection({ type }: { type: string }) {
   return (
     <div className="flex flex-col gap-5 justify-start items-start w-full">
       <div className="text-l w-fit">{type}</div>
-      <div className="flex flex-row w-full gap-5 flex-wrap justify-start items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-5">
         {type === "Projects" &&
           ProjectsData.map((card) => (
             <PortfolioProjectCard
