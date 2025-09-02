@@ -133,11 +133,12 @@ model Certification {
   id    String     @id @default(uuid())
   title String @db.VarChar(200)
   description String @db.VarChar(1000)
-  proofUrl  String @db.VarChar(500)
+  issuingOrganization String @db.VarChar(200)
+  proofLink  String @db.VarChar(500)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
-  start DateTime
-  end DateTime
+  startDate DateTime
+  endDate DateTime
 }
 
 model PortfolioProject {
@@ -156,23 +157,22 @@ model WorkExperience {
   title String @db.VarChar(200)
   description String @db.VarChar(2000)
   proofLink String @db.VarChar(200)
-  proofLabel String @db.VarChar(16)
   company String @db.VarChar(200)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
-  start DateTime
-  end DateTime
+  startDate String @db.VarChar(50)
+  endDate String @db.VarChar(50)
 }
 
 model Education{
   id    String     @id @default(uuid())
   degree Milestones
   institution String @db.VarChar(200)
-  proof String @db.VarChar(500)
+  proofLink String @db.VarChar(500)
   score String @db.VarChar(50)
-  maximumScore String @db.VarChar(50)
+  maxScore String @db.VarChar(50)
   user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
   userId String
-  start DateTime
-  end DateTime
+  startDate String @db.VarChar(50)
+  endDate String  @db.VarChar(50)
 }

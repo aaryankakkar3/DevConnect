@@ -117,7 +117,7 @@ function Profile() {
       endDate: "Mar 2021",
       description:
         "Completed an intensive course on React.js and its ecosystem.",
-      proofUrl: "https://reacttraining.com/certificates/john-doe",
+      proofLink: "https://reacttraining.com/certificates/john-doe",
     },
     {
       id: 2,
@@ -127,7 +127,7 @@ function Profile() {
       endDate: "Jun 2021",
       description:
         "Achieved certification in designing distributed systems on AWS.",
-      proofUrl:
+      proofLink:
         "https://aws.amazon.com/certification/certified-solutions-architect-associate/",
     },
     {
@@ -137,54 +137,54 @@ function Profile() {
       startDate: "Jul 2021",
       endDate: "Sep 2021",
       description: "Completed a bootcamp in full stack web development.",
-      proofUrl: "https://codingbootcamp.com/certificates/john-doe",
+      proofLink: "https://codingbootcamp.com/certificates/john-doe",
     },
   ];
 
   const reviewData = [
     {
       id: 1,
-      reviewerName: "Alice Smith",
-      reviewText:
+      giver: "Alice Smith",
+      comment:
         "John is an exceptional developer who consistently delivers high-quality work. His attention to detail and problem-solving skills are top-notch.",
       rating: 5,
-      imageUrl:
+      profilePicture:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
     },
     {
       id: 2,
-      reviewerName: "Bob Johnson",
-      reviewText:
+      giver: "Bob Johnson",
+      comment:
         "Working with John was a pleasure. He is a team player and always willing to go the extra mile to ensure project success.",
       rating: 4,
-      imageUrl:
+      profilePicture:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
     },
     {
       id: 3,
-      reviewerName: "Catherine Lee",
-      reviewText:
+      giver: "Catherine Lee",
+      comment:
         "John's expertise in frontend development significantly improved our application's user experience. Highly recommended!",
       rating: 5,
-      imageUrl:
+      profilePicture:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
     },
     {
       id: 4,
-      reviewerName: "David Martinez",
-      reviewText:
+      giver: "David Martinez",
+      comment:
         "John delivered our project ahead of schedule with clean, maintainable code. His communication skills and technical knowledge are impressive.",
       rating: 5,
-      imageUrl:
+      profilePicture:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
     },
     {
       id: 5,
-      reviewerName: "Emily Chen",
-      reviewText:
+      giver: "Emily Chen",
+      comment:
         "Great collaboration experience with John. He quickly understood our requirements and implemented solutions that exceeded our expectations.",
       rating: 4,
-      imageUrl:
+      profilePicture:
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
     },
   ];

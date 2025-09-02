@@ -63,17 +63,17 @@ function ProfileSection({ type, data }: { type: string; data: any[] }) {
               startDate={card.startDate}
               endDate={card.endDate}
               description={card.description}
-              proofUrl={card.proofUrl}
+              proofUrl={card.proofLink}
             />
           ))}
         {type === "Reviews" &&
           safeData.map((card) => (
             <ReviewCard
               key={card.id}
-              reviewerName={card.reviewerName}
-              reviewText={card.reviewText}
+              reviewerName={card.giver}
+              reviewText={card.comment}
               rating={card.rating}
-              imageUrl={card.imageUrl}
+              imageUrl={card.profilePicture}
             />
           ))}
         {type != "Reviews" && (

@@ -1,95 +1,188 @@
 import { SquarePlus } from "lucide-react";
 import React from "react";
 
-function SingleInput({ label }: { label: string }) {
-  return (
-    <label className="flex flex-col gap-2 w-full">
-      {label}
-      <input
-        type="text"
-        className={`py-4 px-8 bg-bglight focus:outline-none focus:ring-0 text-wrap justify-start items-start ${
-          label == "Description" ? "h-40" : ""
-        }`}
-      />
-    </label>
-  );
-}
-
-function DoubleInput({ label1, label2 }: { label1: string; label2: string }) {
-  return (
-    <div className="flex flex-row gap-4">
-      <label className="flex flex-col gap-2 w-full">
-        {label1}
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-        />
-      </label>
-      <label className="flex flex-col gap-2 w-full">
-        {label2}
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-        />
-      </label>
-    </div>
-  );
-}
-
 function EditProjectModal() {
   return (
     <>
-      <SingleInput label="Title" />
-      <SingleInput label="Description" />
-      <LinkInput />
+      <label className="flex flex-col gap-2 w-full">
+        Project Name
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      {/* Insert multiple images */}
+      <label className="flex flex-col gap-2 w-full">
+        Description
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <div className="flex flex-row gap-4">
+        <label className="flex flex-col gap-2 w-full">
+          Proof Link
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+        <label className="flex flex-col gap-2 w-full">
+          Link Label
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+      </div>
     </>
   );
 }
 function EditWorkModal() {
   return (
     <>
-      <SingleInput label="Position" />
-      <SingleInput label="Company" />
-      <SingleInput label="Description" />
-      <DoubleInput label1="Start Date" label2="End Date" />
-      <LinkInput />
+      <label className="flex flex-col gap-2 w-full">
+        Position
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <label className="flex flex-col gap-2 w-full">
+        Company Name
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <label className="flex flex-col gap-2 w-full">
+        Description
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <div className="flex flex-row gap-4">
+        <label className="flex flex-col gap-2 w-full">
+          From
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+        <label className="flex flex-col gap-2 w-full">
+          To
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+      </div>
+      <label className="flex flex-col gap-2 w-full">
+        Proof Link
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
     </>
   );
 }
 function EditEducationModal() {
   return (
     <>
-      <SingleInput label="Degree" />
-      <SingleInput label="Institution" />
-      <DoubleInput label1="Score" label2="Max score" />
-      <DoubleInput label1="Start Date" label2="End Date" />
-      <LinkInput />
+      <label className="flex flex-col gap-2 w-full">
+        Degree
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <label className="flex flex-col gap-2 w-full">
+        Institution
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <div className="flex flex-row gap-4">
+        <label className="flex flex-col gap-2 w-full">
+          Score
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+        <label className="flex flex-col gap-2 w-full">
+          Max Score
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+      </div>
+      <div className="flex flex-row gap-4">
+        <label className="flex flex-col gap-2 w-full">
+          From
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+        <label className="flex flex-col gap-2 w-full">
+          To
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+      </div>
+      {/* Upload Picture Proof */}
     </>
   );
 }
 function EditCourseModal() {
   return (
     <>
-      <SingleInput label="Title" />
-      <SingleInput label="Issuing Organization" />
-      <SingleInput label="Description" />
-      <DoubleInput label1="Start Date" label2="End Date" />
-      <LinkInput />
-    </>
-  );
-}
-
-function LinkInput() {
-  return (
-    <div className="gap-2 flex flex-col">
-      <DoubleInput label1="Link" label2="Label" />
-      <div className="flex justify-end">
-        <SquarePlus
-          className="w-9 h-9 text-muted hover:text-white"
-          strokeWidth={1}
+      <label className="flex flex-col gap-2 w-full">
+        Title
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
         />
+      </label>
+      <label className="flex flex-col gap-2 w-full">
+        Granting Organization
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <label className="flex flex-col gap-2 w-full">
+        Description
+        <input
+          type="text"
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        />
+      </label>
+      <div className="flex flex-row gap-4">
+        <label className="flex flex-col gap-2 w-full">
+          Start Date
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
+        <label className="flex flex-col gap-2 w-full">
+          End Date
+          <input
+            type="text"
+            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          />
+        </label>
       </div>
-    </div>
+      {/* Insert image proof */}
+    </>
   );
 }
 
@@ -120,7 +213,7 @@ function AddProfileEntryModal({
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
-      <div className="relative z-20 w-175 h-fit bg-bgdark border border-bglight flex flex-col p-10 gap-8">
+      <form className="relative z-20 w-175 h-fit bg-bgdark border border-bglight flex flex-col p-10 gap-8">
         <h2 className="text-l">
           <span className="text-accent">Add </span>
           {type}
@@ -140,7 +233,7 @@ function AddProfileEntryModal({
             Cancel
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
