@@ -1,14 +1,18 @@
-import React from "react";
-import PortfolioProjectCard from "./PortfolioProjectCard";
-import WorkCard from "./WorkCard";
-import EducationCard from "./EducationCard";
-import CertificationCard from "./CertificationCard";
-import ReviewCard from "./ReviewCard";
+"use client";
+
+import React, { useState } from "react";
+import PortfolioProjectCard from "./Profile Cards/PortfolioProjectCard";
+import WorkCard from "./Profile Cards/WorkCard";
+import EducationCard from "./Profile Cards/EducationCard";
+import CertificationCard from "./Profile Cards/CertificationCard";
+import ReviewCard from "./Profile Cards/ReviewCard";
 import { CirclePlus } from "lucide-react";
+import AddProfileEntryModal from "./Add Profile Entry/AddProfileEntryModal";
 
 function ProfileSection({ type, data }: { type: string; data: any[] }) {
   // Handle empty data gracefully
   const safeData = data || [];
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-5 justify-start items-start w-full">
@@ -72,13 +76,22 @@ function ProfileSection({ type, data }: { type: string; data: any[] }) {
               imageUrl={card.imageUrl}
             />
           ))}
-        <div className="w-full h-full min-h-50 border-2 border-dashed border-bglight flex justify-center items-center">
-          <CirclePlus
-            className="w-15 h-15 text-bglight hover:text-muted"
-            strokeWidth={1}
-          />
-        </div>
+        {type != "Reviews" && (
+          <div className="w-full h-full min-h-50 border-2 border-dashed border-bglight flex justify-center items-center">
+            <CirclePlus
+              className="w-15 h-15 text-bglight hover:text-muted"
+              strokeWidth={1}
+              onClick={() => setIsModalOpen(true)}
+            />
+          </div>
+        )}
       </div>
+      {isModalOpen && (
+        <AddProfileEntryModal
+          type={type}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
