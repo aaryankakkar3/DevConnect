@@ -3,9 +3,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ username: string }> }
+) {
   try {
-    // Get user ID from middleware headers
+    const { username } = await params;
+
     const userId = request.headers.get("x-user-id");
 
     if (!userId) {
@@ -15,19 +19,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse the request body
     const body = await request.json();
-    const { title, description, proofLink, company, startDate, endDate } = body;
+    const { title, description, company, startDate, endDate, proofLink } = body;
 
-    // Create the work experience entry
     const workExperience = await prisma.workExperience.create({
       data: {
         title,
         description,
-        proofLink,
         company,
         startDate,
         endDate,
+        proofLink,
         userId,
       },
     });

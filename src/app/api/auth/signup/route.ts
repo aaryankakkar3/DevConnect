@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
         name: fullName,
         contactNumber,
         clearance: clearance,
+        username: "aaryankakkar",
       },
     });
 

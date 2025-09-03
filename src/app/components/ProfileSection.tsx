@@ -9,7 +9,15 @@ import ReviewCard from "./Profile Cards/ReviewCard";
 import { CirclePlus } from "lucide-react";
 import AddProfileEntryModal from "./Add Profile Entry/AddProfileEntryModal";
 
-function ProfileSection({ type, data }: { type: string; data: any[] }) {
+function ProfileSection({
+  type,
+  data,
+  onDataUpdate,
+}: {
+  type: string;
+  data: any[];
+  onDataUpdate?: (newData: any) => void;
+}) {
   // Handle empty data gracefully
   const safeData = data || [];
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,6 +98,10 @@ function ProfileSection({ type, data }: { type: string; data: any[] }) {
         <AddProfileEntryModal
           type={type}
           onClose={() => setIsModalOpen(false)}
+          onSuccess={(newData) => {
+            setIsModalOpen(false);
+            onDataUpdate?.(newData);
+          }}
         />
       )}
     </div>

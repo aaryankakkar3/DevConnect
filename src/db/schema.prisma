@@ -1,11 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id                         String             @id @default(uuid())
+  email                      String             @unique
+  name                       String?
+  clearance                  Clearance
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @default(now()) @updatedAt
+  profilePicture             String?
+  selfieCheckPhoto           String?
+  idPhoto                    String?
+  dob                        DateTime?
+  gender                     Gender?
+  location                   String?
+  skills                     String[]
+  contactNumber              String?
+  username                   String             @unique @db.VarChar(15)
+  bids                       Bid[]
+  certifications             Certification[]
+  participatingConversations Conversation[]     @relation("ParticipatingConversations")
+  initiatedConversations     Conversation[]     @relation("InitiatedConversations")
+  educations                 Education[]
+  receivedMessages           Message[]          @relation("ReceivedMessages")
+  sentMessages               Message[]          @relation("SentMessages")
+  portfolioProjects          PortfolioProject[]
+  createdProjects            Project[]          @relation("ProjectCreator")
+  developerProjects          Project[]          @relation("ProjectDeveloper")
+  givenReviews               Review[]           @relation("GivenReviews")
+  receivedReviews            Review[]           @relation("ReceivedReviews")
+  workexperiences            WorkExperience[]
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  title       String
+  budget      Int
+  skills      String[]
+  status      ProjectStatus @default(open)
+  createdAt   DateTime      @default(now())
+  creatorId   String
+  details     String
+  developerId String?
+  bids        Bid[]
+  creator     User          @relation("ProjectCreator", fields: [creatorId], references: [id])
+  developer   User?         @relation("ProjectDeveloper", fields: [developerId], references: [id])
+}
+
+model Bid {
+  id        String   @id @default(uuid())
+  bidderId  String
+  projectId String
+  createdAt DateTime @default(now())
+  price     Int
+  details   String
+  time      Int
+  bidder    User     @relation(fields: [bidderId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([bidderId, projectId])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String   @db.VarChar(5000)
+  createdAt  DateTime @default(now())
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model Conversation {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  receiver   User     @relation("ParticipatingConversations", fields: [receiverId], references: [id])
+  sender     User     @relation("InitiatedConversations", fields: [senderId], references: [id])
+
+  @@unique([senderId, receiverId])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  giverId    String
+  receiverId String
+  comment    String   @db.VarChar(2000)
+  rating     Int
+  createdAt  DateTime @default(now())
+  giver      User     @relation("GivenReviews", fields: [giverId], references: [id])
+  receiver   User     @relation("ReceivedReviews", fields: [receiverId], references: [id])
+
+  @@unique([giverId, receiverId])
+}
+
+model Certification {
+  id                  String @id @default(uuid())
+  title               String @db.VarChar(200)
+  description         String @db.VarChar(1000)
+  userId              String
+  endDate             String @db.VarChar(50)
+  issuingOrganization String @db.VarChar(200)
+  proofLink           String @db.VarChar(500)
+  startDate           String @db.VarChar(50)
+  user                User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PortfolioProject {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(200)
+  description String   @db.VarChar(2000)
+  links       String[]
+  images      String[]
+  userId      String
+  linkLabels  String[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WorkExperience {
+  id          String @id @default(uuid())
+  title       String @db.VarChar(200)
+  description String @db.VarChar(2000)
+  company     String @db.VarChar(200)
+  userId      String
+  endDate     String @db.VarChar(50)
+  proofLink   String @db.VarChar(200)
+  startDate   String @db.VarChar(50)
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          String     @id @default(uuid())
+  degree      Milestones
+  institution String     @db.VarChar(200)
+  score       String     @db.VarChar(50)
+  userId      String
+  endDate     String     @db.VarChar(50)
+  maxScore    String     @db.VarChar(50)
+  proofLink   String     @db.VarChar(500)
+  startDate   String     @db.VarChar(50)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ProjectStatus {
@@ -15,7 +158,7 @@ enum ProjectStatus {
   cancelled
 }
 
-enum Clearance{
+enum Clearance {
   dev
   client
   admin
@@ -27,152 +170,10 @@ enum Gender {
   other
 }
 
-enum Milestones{
-    highschool
-    diploma
-    bachelors
-    masters
-    phd
-}
-
-model User {
-  id    String     @id @default(uuid())
-  email String  @unique
-  name  String?
-  contactNumber String?
-  clearance Clearance
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
-  bids Bid[]
-  createdProjects Project[] @relation("ProjectCreator")
-  developerProjects Project[] @relation("ProjectDeveloper")
-  sentMessages Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
-  initiatedConversations Conversation[] @relation("InitiatedConversations")
-  participatingConversations Conversation[] @relation("ParticipatingConversations")
-  givenReviews Review[] @relation("GivenReviews")
-  receivedReviews Review[] @relation("ReceivedReviews")
-  certifications Certification[]
-  workexperiences WorkExperience[]
-  profilePicture String?
-  selfieCheckPhoto String?
-  idPhoto String?
-  dob DateTime?
-  gender Gender?
-  location String?
-  skills String[]
-  educations Education[]
-  portfolioProjects PortfolioProject[]
-}
-
-model Project {
-  id    String     @id @default(uuid())
-  title String
-  budget Int @db.Integer
-  skills String[]
-  status ProjectStatus @default(open)
-  createdAt DateTime @default(now())
-  creator User @relation("ProjectCreator" , fields: [creatorId] , references:[id])
-  creatorId String
-  bids Bid[]
-  details String
-  developer User? @relation("ProjectDeveloper" , fields: [developerId] , references:[id], onDelete: SetNull)
-  developerId String?
-}
-
-model Bid{
-  id    String     @id @default(uuid())
-  bidder User @relation(fields: [bidderId] , references:[id])
-  bidderId String
-  project Project @relation(fields: [projectId] , references:[id])
-  projectId String
-  createdAt DateTime @default(now())
-  price Int @db.Integer
-  details String
-  time Int @db.Integer
-  
-  @@unique([bidderId, projectId])
-}
-
-model Message {
-  id    String     @id @default(uuid())
-  sender User @relation("SentMessages", fields: [senderId], references: [id])
-  senderId String
-  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  receiverId String
-  content String @db.VarChar(5000)
-  createdAt DateTime @default(now())
-}
-
-model Conversation {
-  id    String     @id @default(uuid())
-  sender User @relation("InitiatedConversations", fields: [senderId], references: [id])
-  senderId String
-  receiver User @relation("ParticipatingConversations", fields: [receiverId], references: [id])
-  receiverId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
-  
-  @@unique([senderId, receiverId])
-}
-
-model Review {
-  id    String     @id @default(uuid())
-  giver User @relation("GivenReviews", fields: [giverId], references: [id])
-  giverId String
-  receiver User @relation("ReceivedReviews", fields: [receiverId], references: [id])
-  receiverId String
-  comment String @db.VarChar(2000)
-  rating Int @db.Integer
-  createdAt DateTime @default(now())
-  
-  @@unique([giverId, receiverId])
-}
-
-model Certification {
-  id    String     @id @default(uuid())
-  title String @db.VarChar(200)
-  description String @db.VarChar(1000)
-  issuingOrganization String @db.VarChar(200)
-  proofLink  String @db.VarChar(500)
-  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
-  userId String
-  startDate String @db.VarChar(50)
-  endDate String @db.VarChar(50)
-}
-
-model PortfolioProject {
-  id    String     @id @default(uuid())
-  title String @db.VarChar(200)
-  description String @db.VarChar(2000)
-  links String[]
-  linkLabels String[]
-  images  String[]
-  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
-  userId String
-}
-
-model WorkExperience {
-  id    String     @id @default(uuid())
-  title String @db.VarChar(200)
-  description String @db.VarChar(2000)
-  proofLink String @db.VarChar(200)
-  company String @db.VarChar(200)
-  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
-  userId String
-  startDate String @db.VarChar(50)
-  endDate String @db.VarChar(50)
-}
-
-model Education{
-  id    String     @id @default(uuid())
-  degree Milestones
-  institution String @db.VarChar(200)
-  proofLink String @db.VarChar(500)
-  score String @db.VarChar(50)
-  maxScore String @db.VarChar(50)
-  user User @relation(fields: [userId] , references:[id], onDelete: Cascade)
-  userId String
-  startDate String @db.VarChar(50)
-  endDate String  @db.VarChar(50)
+enum Milestones {
+  highschool
+  diploma
+  bachelors
+  masters
+  phd
 }

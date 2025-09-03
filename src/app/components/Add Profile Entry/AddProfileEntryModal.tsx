@@ -366,9 +366,11 @@ function EditCourseModal({
 function AddProfileEntryModal({
   type,
   onClose,
+  onSuccess,
 }: {
   type: string;
   onClose: () => void;
+  onSuccess?: (newData: any) => void;
 }) {
   const [formData, setFormData] = useState({
     title: "",
@@ -404,7 +406,7 @@ function AddProfileEntryModal({
       // Prepare data based on form type (userId will be extracted by middleware)
       switch (type) {
         case "Projects":
-          endpoint = "/api/portfolio-projects";
+          endpoint = `/api/portfolio-projects`;
           payload = {
             title: formData.title,
             description: formData.description,
@@ -417,7 +419,7 @@ function AddProfileEntryModal({
           break;
 
         case "Work Experience":
-          endpoint = "/api/work-experiences";
+          endpoint = `/api/work-experiences`;
           payload = {
             title: formData.title,
             description: formData.description,
@@ -429,7 +431,7 @@ function AddProfileEntryModal({
           break;
 
         case "Education":
-          endpoint = "/api/educations";
+          endpoint = `/api/educations`;
           payload = {
             degree: formData.degree,
             institution: formData.institution,
@@ -442,7 +444,7 @@ function AddProfileEntryModal({
           break;
 
         case "Certifications / Courses":
-          endpoint = "/api/certifications";
+          endpoint = `/api/certifications`;
           payload = {
             title: formData.title,
             description: formData.description,
@@ -480,6 +482,9 @@ function AddProfileEntryModal({
       const result = await response.json();
       console.log("Success:", result);
       toast.success(`${type} added successfully!`);
+
+      // Pass the created data to onSuccess for optimistic updates
+      onSuccess?.(result.data);
       onClose();
     } catch (error) {
       console.error("Error:", error);

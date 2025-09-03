@@ -1,63 +1,79 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import ProfileSection from "../components/ProfileSection";
+"use client";
 
-function Profile() {
-  // State for storing fetched data
-  const [projectsData, setProjectsData] = useState([]);
-  const [workData, setWorkData] = useState([]);
-  const [educationData, setEducationData] = useState([]);
-  const [certificationData, setCertificationData] = useState([]);
+import React, { useState, useEffect } from "react";
+import Navbar from "../../components/Navbar";
+import ProfileSection from "../../components/ProfileSection";
+
+function Profile({ params }: { params: Promise<{ username: string }> }) {
+  // State for storing fetched data - separate arrays for each type
+  const [profileData, setProfileData] = useState<any>(null);
+  const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
+  const [workExperiences, setWorkExperiences] = useState<any[]>([]);
+  const [educations, setEducations] = useState<any[]>([]);
+  const [certifications, setCertifications] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>("");
 
-  // Fetch all profile data
+  // Functions to add new data to arrays (optimistic updates)
+  const addPortfolioProject = (newProject: any) => {
+    setPortfolioProjects((prev) => [newProject, ...prev]);
+  };
+
+  const addWorkExperience = (newWork: any) => {
+    setWorkExperiences((prev) => [newWork, ...prev]);
+  };
+
+  const addEducation = (newEducation: any) => {
+    setEducations((prev) => [newEducation, ...prev]);
+  };
+
+  const addCertification = (newCert: any) => {
+    setCertifications((prev) => [newCert, ...prev]);
+  };
+
+  // Extract username from params
   useEffect(() => {
+    const getUsername = async () => {
+      const resolvedParams = await params;
+      setUsername(resolvedParams.username);
+    };
+    getUsername();
+  }, [params]);
+
+  // Fetch profile data for the specific username
+  useEffect(() => {
+    if (!username) return;
+
     const fetchProfileData = async () => {
       try {
         setLoading(true);
 
-        // Fetch all data in parallel
-        const [
-          projectsResponse,
-          workResponse,
-          educationResponse,
-          certificationsResponse,
-        ] = await Promise.all([
-          fetch("/api/portfolio-projects", { credentials: "include" }),
-          fetch("/api/work-experiences", { credentials: "include" }),
-          fetch("/api/educations", { credentials: "include" }),
-          fetch("/api/certifications", { credentials: "include" }),
-        ]);
+        const response = await fetch(`/api/profile/${username}`, {
+          credentials: "include",
+        });
 
-        // Check if all responses are ok
-        if (
-          !projectsResponse.ok ||
-          !workResponse.ok ||
-          !educationResponse.ok ||
-          !certificationsResponse.ok
-        ) {
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error(`User with username "${username}" not found`);
+          }
           throw new Error("Failed to fetch profile data");
         }
 
-        // Parse all responses
-        const [
-          projectsResult,
-          workResult,
-          educationResult,
-          certificationsResult,
-        ] = await Promise.all([
-          projectsResponse.json(),
-          workResponse.json(),
-          educationResponse.json(),
-          certificationsResponse.json(),
-        ]);
+        const result = await response.json();
+        const data = result.data;
 
-        // Set the data
-        setProjectsData(projectsResult.data || []);
-        setWorkData(workResult.data || []);
-        setEducationData(educationResult.data || []);
-        setCertificationData(certificationsResult.data || []);
+        // Set profile data
+        setProfileData(data);
+
+        // Initialize separate arrays
+        setPortfolioProjects(data.portfolioProjects || []);
+        setWorkExperiences(data.workexperiences || []);
+        setEducations(data.educations || []);
+        setCertifications(data.certifications || []);
+        setReviews(data.receivedReviews || []);
       } catch (err) {
         console.error("Error fetching profile data:", err);
         setError(
@@ -69,7 +85,7 @@ function Profile() {
     };
 
     fetchProfileData();
-  }, []);
+  }, [username]); // Removed refreshTrigger dependency
   // Demo data for all sections
   // const projectsData = [
   //   {
@@ -208,54 +224,6 @@ function Profile() {
   //   },
   // ];
 
-  const reviewData = [
-    {
-      id: 1,
-      giver: "Alice Smith",
-      comment:
-        "John is an exceptional developer who consistently delivers high-quality work. His attention to detail and problem-solving skills are top-notch.",
-      rating: 5,
-      profilePicture:
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
-    },
-    {
-      id: 2,
-      giver: "Bob Johnson",
-      comment:
-        "Working with John was a pleasure. He is a team player and always willing to go the extra mile to ensure project success.",
-      rating: 4,
-      profilePicture:
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
-    },
-    {
-      id: 3,
-      giver: "Catherine Lee",
-      comment:
-        "John's expertise in frontend development significantly improved our application's user experience. Highly recommended!",
-      rating: 5,
-      profilePicture:
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
-    },
-    {
-      id: 4,
-      giver: "David Martinez",
-      comment:
-        "John delivered our project ahead of schedule with clean, maintainable code. His communication skills and technical knowledge are impressive.",
-      rating: 5,
-      profilePicture:
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
-    },
-    {
-      id: 5,
-      giver: "Emily Chen",
-      comment:
-        "Great collaboration experience with John. He quickly understood our requirements and implemented solutions that exceeded our expectations.",
-      rating: 4,
-      profilePicture:
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAA1BMVEWAgICQdD0xAAAALElEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgZViQAAd2fpbUAAAAASUVORK5CYII=",
-    },
-  ];
-
   // Show loading state
   if (loading) {
     return (
@@ -280,6 +248,31 @@ function Profile() {
     );
   }
 
+  // Show not found if no profile data
+  if (!profileData) {
+    return (
+      <div className="p-10 flex flex-col gap-10">
+        <Navbar />
+        <div className="flex justify-center items-center h-96">
+          <p className="text-muted">Profile not found</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Format date of birth
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Format gender display
+  const formatGender = (gender: string) => {
+    if (!gender) return "";
+    return gender.charAt(0).toUpperCase() + gender.slice(1);
+  };
+
   return (
     <div className="p-10 flex flex-col gap-10">
       <Navbar />
@@ -293,34 +286,69 @@ function Profile() {
           </button>
         </div>
         <div className="flex flex-row gap-10 w-full h-fit">
-          <div className="w-75 h-75 bg-muted rounded-full shrink-0"></div>
+          <div className="w-75 h-75 bg-muted rounded-full shrink-0 overflow-hidden">
+            {profileData.profilePicture ? (
+              <img
+                src={profileData.profilePicture}
+                alt={`${profileData.name || profileData.username}'s profile`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted"></div>
+            )}
+          </div>
           <div className="flex flex-col gap-5 w-full justify-center">
             <div className="flex flex-row gap-5 text-l justify-start items-start">
-              <p className="">Aaryan Kakkar</p>
-              <p className="text-muted">Developer</p>
+              <p className="">{profileData.name || profileData.username}</p>
+              <p className="text-muted">
+                {profileData.clearance === "dev" ? "Developer" : "Client"}
+              </p>
             </div>
-            <p className="text-muted2">15/10/2003 | India | Male</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-              ultrices turpis vel luctus fermentum. Duis accumsan eget velit
-              maximus tincidunt. Fusce fringilla placerat elit, id hendrerit
-              neque auctor nec. Nunc suscipit justo id velit dapibus,
-              pellentesque vulputate est pellentesque. Phasellus in velit
-              rhoncus, molestie ipsum a, semper lectus. Curabitur sollicitudin
-              dolor at mi elementum malesuada. Cras accumsan pellentesque ex,
-              vel auctor neque tincidunt non.
+            <p className="text-muted2">
+              {profileData.dob && formatDate(profileData.dob)}
+              {profileData.dob && profileData.location && " | "}
+              {profileData.location}
+              {(profileData.dob || profileData.location) &&
+                profileData.gender &&
+                " | "}
+              {profileData.gender && formatGender(profileData.gender)}
             </p>
-            <p>Frontend Engineer | Backend Designer | Fullstack Developer</p>
+            {profileData.skills && profileData.skills.length > 0 && (
+              <p>{profileData.skills.join(" | ")}</p>
+            )}
+            <p>
+              Welcome to {profileData.name || profileData.username}'s profile!
+              {profileData.clearance === "dev"
+                ? " Check out their portfolio and experience below."
+                : " Browse their projects and reviews."}
+            </p>
           </div>
         </div>
-        <ProfileSection type="Projects" data={projectsData} />
-        <ProfileSection type="Work Experience" data={workData} />
-        <ProfileSection type="Education" data={educationData} />
+        <ProfileSection
+          type="Projects"
+          data={portfolioProjects}
+          onDataUpdate={addPortfolioProject}
+        />
+        <ProfileSection
+          type="Work Experience"
+          data={workExperiences}
+          onDataUpdate={addWorkExperience}
+        />
+        <ProfileSection
+          type="Education"
+          data={educations}
+          onDataUpdate={addEducation}
+        />
         <ProfileSection
           type="Certifications / Courses"
-          data={certificationData}
+          data={certifications}
+          onDataUpdate={addCertification}
         />
-        <ProfileSection type="Reviews" data={reviewData} />
+        <ProfileSection
+          type="Reviews"
+          data={reviews}
+          onDataUpdate={() => {}} // Reviews don't have optimistic updates yet
+        />
       </div>
     </div>
   );
