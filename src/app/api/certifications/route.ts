@@ -5,6 +5,15 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
+    // Get user ID from middleware headers
+    const userId = request.headers.get("x-user-id");
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     // Parse the request body
     const body = await request.json();
     const {
@@ -14,7 +23,6 @@ export async function POST(request: NextRequest) {
       proofLink,
       startDate,
       endDate,
-      userId,
     } = body;
 
     // Create the certification entry

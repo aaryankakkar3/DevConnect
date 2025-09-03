@@ -1,5 +1,6 @@
 import { SquareMinus, SquarePlus } from "lucide-react";
 import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 function EditProjectModal({
   formData,
@@ -247,7 +248,7 @@ function EditEducationModal({
         <label className="flex flex-col gap-2 w-full">
           From
           <input
-            type="date"
+            type="text"
             className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
             value={formData.startDate}
             onChange={(e) =>
@@ -258,7 +259,7 @@ function EditEducationModal({
         <label className="flex flex-col gap-2 w-full">
           To
           <input
-            type="date"
+            type="text"
             className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
             value={formData.endDate}
             onChange={(e) =>
@@ -326,7 +327,7 @@ function EditCourseModal({
         <label className="flex flex-col gap-2 w-full">
           Start Date
           <input
-            type="date"
+            type="text"
             className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
             value={formData.startDate}
             onChange={(e) =>
@@ -337,7 +338,7 @@ function EditCourseModal({
         <label className="flex flex-col gap-2 w-full">
           End Date
           <input
-            type="date"
+            type="text"
             className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
             value={formData.endDate}
             onChange={(e) =>
@@ -388,16 +389,103 @@ function AddProfileEntryModal({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    console.log("Frontend Form Data", formData);
     setIsLoading(true);
+
+    // Show loading toast
+    const loadingToast = toast.loading(`Adding ${type}...`);
+
     try {
-      // Add API call logic here
-      console.log("Form data:", formData);
-      alert(`${type} added successfully!`);
+      let endpoint = "";
+      let payload = {};
+
+      // Prepare data based on form type (userId will be extracted by middleware)
+      switch (type) {
+        case "Projects":
+          endpoint = "/api/portfolio-projects";
+          payload = {
+            title: formData.title,
+            description: formData.description,
+            links: formData.links.filter((link) => link.trim() !== ""),
+            linkLabels: formData.linkLabels.filter(
+              (label) => label.trim() !== ""
+            ),
+            images: formData.images.filter((img) => img.trim() !== ""),
+          };
+          break;
+
+        case "Work Experience":
+          endpoint = "/api/work-experiences";
+          payload = {
+            title: formData.title,
+            description: formData.description,
+            company: formData.company,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            proofLink: formData.proofLink,
+          };
+          break;
+
+        case "Education":
+          endpoint = "/api/educations";
+          payload = {
+            degree: formData.degree,
+            institution: formData.institution,
+            score: formData.score,
+            maxScore: formData.maxScore,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            proofLink: formData.proofLink,
+          };
+          break;
+
+        case "Certifications / Courses":
+          endpoint = "/api/certifications";
+          payload = {
+            title: formData.title,
+            description: formData.description,
+            issuingOrganization: formData.issuingOrganization,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            proofLink: formData.proofLink,
+          };
+          break;
+
+        default:
+          throw new Error("Unknown form type");
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // This ensures cookies are sent
+        body: JSON.stringify(payload),
+      });
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(
+          `Error adding ${type}: ${errorData.error || response.statusText}`
+        );
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Success:", result);
+      toast.success(`${type} added successfully!`);
       onClose();
     } catch (error) {
       console.error("Error:", error);
-      alert(`Error adding ${type}. Please try again.`);
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+      toast.error(`Error adding ${type}. Please try again.`);
     } finally {
       setIsLoading(false);
     }
@@ -437,6 +525,7 @@ function AddProfileEntryModal({
         <div className="flex flex-col gap-4 w-full">{renderModalContent()}</div>
         <div className="flex flex-row gap-4 justify-end">
           <button
+            type="button"
             className="cursor-pointer px-8 py-4 bg-accent w-fit text-bgdark font-semibold hover:opacity-75 disabled:opacity-50"
             onClick={handleSubmit}
             disabled={isLoading}
@@ -444,6 +533,7 @@ function AddProfileEntryModal({
             {isLoading ? "Adding..." : "Add"}
           </button>
           <button
+            type="button"
             onClick={onClose}
             className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-white font-semibold hover:opacity-75"
             disabled={isLoading}
@@ -452,6 +542,28 @@ function AddProfileEntryModal({
           </button>
         </div>
       </form>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          success: {
+            iconTheme: {
+              primary: "#4ade80",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff",
+            },
+          },
+        }}
+      />
     </div>
   );
 }

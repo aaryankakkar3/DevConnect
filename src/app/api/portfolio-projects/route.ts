@@ -5,9 +5,31 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
+    // Get user ID from middleware headers
+    const userId = request.headers.get("x-user-id");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized - No user ID found" },
+        { status: 401 }
+      );
+    }
+
     // Parse the request body
     const body = await request.json();
-    const { title, description, links, linkLabels, images, userId } = body;
+    const { title, description, links, linkLabels, images } = body;
+
+    // Check if user exists in database
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      return NextResponse.json(
+        { success: false, error: "User not found in database" },
+        { status: 404 }
+      );
+    }
 
     // Create the portfolio project
     const portfolioProject = await prisma.portfolioProject.create({

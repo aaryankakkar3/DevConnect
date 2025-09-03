@@ -5,17 +5,19 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
+    // Get user ID from middleware headers
+    const userId = request.headers.get("x-user-id");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     // Parse the request body
     const body = await request.json();
-    const {
-      title,
-      description,
-      proofLink,
-      company,
-      startDate,
-      endDate,
-      userId,
-    } = body;
+    const { title, description, proofLink, company, startDate, endDate } = body;
 
     // Create the work experience entry
     const workExperience = await prisma.workExperience.create({
