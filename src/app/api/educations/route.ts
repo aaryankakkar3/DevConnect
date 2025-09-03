@@ -1,0 +1,112 @@
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export async function POST(request: NextRequest) {
+  try {
+    // Parse the request body
+    const body = await request.json();
+    const {
+      degree,
+      institution,
+      proofLink,
+      score,
+      maxScore,
+      startDate,
+      endDate,
+      userId,
+    } = body;
+
+    // Create the education entry
+    const education = await prisma.education.create({
+      data: {
+        degree,
+        institution,
+        proofLink,
+        score,
+        maxScore,
+        startDate,
+        endDate,
+        userId,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: education,
+        message: "Education entry created successfully",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating education entry:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to create education entry",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    let educations;
+
+    if (userId) {
+      // Get educations for a specific user
+      educations = await prisma.education.findMany({
+        where: {
+          userId: userId,
+        },
+        orderBy: {
+          startDate: "desc", // Most recent first
+        },
+      });
+    } else {
+      // Get all educations
+      educations = await prisma.education.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: "desc",
+        },
+      });
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: educations,
+        count: educations.length,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching educations:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch educations",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
