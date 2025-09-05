@@ -8,6 +8,22 @@ const iconMap: Record<string, LucideIcon> = {
   HelpCircle,
 };
 
+const handleLogout = async () => {
+  try {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Redirect to login page or handle successful logout
+    window.location.href = "/login";
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
 function NavItem({ icon, label }: { icon: string; label: string }) {
   const IconComponent = iconMap[icon];
 
@@ -36,6 +52,14 @@ function Navbar() {
         <NavItem icon="HelpCircle" label="Help" />
         <button>
           <div className="rounded-full w-6 h-6 border-1 border-muted"></div>
+        </button>
+        <button
+          className="hover:text-bgdark cursor-pointer"
+          onClick={() => {
+            handleLogout();
+          }}
+        >
+          Logout
         </button>
       </div>
     </div>

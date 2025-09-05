@@ -367,26 +367,31 @@ function AddProfileEntryModal({
   type,
   onClose,
   onSuccess,
+  editData = null,
 }: {
   type: string;
   onClose: () => void;
   onSuccess?: (newData: any) => void;
+  editData?: any;
 }) {
+  const isEditMode = editData !== null;
+
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    issuingOrganization: "",
-    proofLink: "",
-    company: "",
-    startDate: "",
-    endDate: "",
-    links: [""],
-    linkLabels: [""],
-    images: [""],
-    degree: "",
-    institution: "",
-    score: "",
-    maxScore: "",
+    id: editData?.id || "",
+    title: editData?.title || "",
+    description: editData?.description || "",
+    issuingOrganization: editData?.issuingOrganization || "",
+    proofLink: editData?.proofLink || "",
+    company: editData?.company || "",
+    startDate: editData?.startDate || "",
+    endDate: editData?.endDate || "",
+    links: editData?.links || [""],
+    linkLabels: editData?.linkLabels || [""],
+    images: editData?.images || [""],
+    degree: editData?.degree || "",
+    institution: editData?.institution || "",
+    score: editData?.score || "",
+    maxScore: editData?.maxScore || "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -397,30 +402,35 @@ function AddProfileEntryModal({
     setIsLoading(true);
 
     // Show loading toast
-    const loadingToast = toast.loading(`Adding ${type}...`);
+    const loadingToast = toast.loading(
+      `${isEditMode ? "Updating" : "Adding"} ${type}...`
+    );
 
     try {
       let endpoint = "";
       let payload = {};
+      const method = isEditMode ? "PUT" : "POST";
 
       // Prepare data based on form type (userId will be extracted by middleware)
       switch (type) {
         case "Projects":
-          endpoint = `/api/portfolio-projects`;
+          endpoint = `/api/profile/portfolio-projects`;
           payload = {
+            ...(isEditMode && { id: formData.id }),
             title: formData.title,
             description: formData.description,
-            links: formData.links.filter((link) => link.trim() !== ""),
+            links: formData.links.filter((link: any) => link.trim() !== ""),
             linkLabels: formData.linkLabels.filter(
-              (label) => label.trim() !== ""
+              (label: any) => label.trim() !== ""
             ),
-            images: formData.images.filter((img) => img.trim() !== ""),
+            images: formData.images.filter((img: any) => img.trim() !== ""),
           };
           break;
 
         case "Work Experience":
-          endpoint = `/api/work-experiences`;
+          endpoint = `/api/profile/work-experiences`;
           payload = {
+            ...(isEditMode && { id: formData.id }),
             title: formData.title,
             description: formData.description,
             company: formData.company,
@@ -431,8 +441,9 @@ function AddProfileEntryModal({
           break;
 
         case "Education":
-          endpoint = `/api/educations`;
+          endpoint = `/api/profile/educations`;
           payload = {
+            ...(isEditMode && { id: formData.id }),
             degree: formData.degree,
             institution: formData.institution,
             score: formData.score,
@@ -444,8 +455,9 @@ function AddProfileEntryModal({
           break;
 
         case "Certifications / Courses":
-          endpoint = `/api/certifications`;
+          endpoint = `/api/profile/certifications`;
           payload = {
+            ...(isEditMode && { id: formData.id }),
             title: formData.title,
             description: formData.description,
             issuingOrganization: formData.issuingOrganization,
@@ -460,7 +472,7 @@ function AddProfileEntryModal({
       }
 
       const response = await fetch(endpoint, {
-        method: "POST",
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -474,14 +486,18 @@ function AddProfileEntryModal({
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(
-          `Error adding ${type}: ${errorData.error || response.statusText}`
+          `Error ${isEditMode ? "updating" : "adding"} ${type}: ${
+            errorData.error || response.statusText
+          }`
         );
         return;
       }
 
       const result = await response.json();
       console.log("Success:", result);
-      toast.success(`${type} added successfully!`);
+      toast.success(
+        `${type} ${isEditMode ? "updated" : "added"} successfully!`
+      );
 
       // Pass the created data to onSuccess for optimistic updates
       onSuccess?.(result.data);
@@ -524,7 +540,7 @@ function AddProfileEntryModal({
       <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
       <form className="relative z-20 w-175 h-fit bg-bgdark border border-bglight flex flex-col p-10 gap-8">
         <h2 className="text-l">
-          <span className="text-accent">Add </span>
+          <span className="text-accent">{isEditMode ? "Edit" : "Add"} </span>
           {type}
         </h2>
         <div className="flex flex-col gap-4 w-full">{renderModalContent()}</div>
@@ -535,7 +551,9 @@ function AddProfileEntryModal({
             onClick={handleSubmit}
             disabled={isLoading}
           >
-            {isLoading ? "Adding..." : "Add"}
+            {isLoading
+              ? `${isEditMode ? "Updating" : "Adding"}...`
+              : `${isEditMode ? "Update" : "Add"}`}
           </button>
           <button
             type="button"

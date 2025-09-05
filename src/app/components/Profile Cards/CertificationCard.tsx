@@ -1,20 +1,36 @@
 import React from "react";
 
 function CertificationCard({
+  id,
   title,
   issuingOrganization,
   startDate,
   endDate,
   description,
   proofUrl,
+  onEdit,
 }: {
+  id: string;
   title: string;
   issuingOrganization: string;
   startDate: string;
   endDate: string;
   description: string;
   proofUrl: string;
+  onEdit?: (cardData: any) => void;
 }) {
+  const handleEdit = () => {
+    onEdit?.({
+      id,
+      title,
+      issuingOrganization,
+      startDate,
+      endDate,
+      description,
+      proofLink: proofUrl,
+    });
+  };
+
   return (
     <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
       <div className="text-accent">
@@ -34,6 +50,12 @@ function CertificationCard({
       >
         Proof
       </a>
+      <button
+        onClick={handleEdit}
+        className="text-accent hover:text-white cursor-pointer text-left"
+      >
+        Edit
+      </button>
     </div>
   );
 }

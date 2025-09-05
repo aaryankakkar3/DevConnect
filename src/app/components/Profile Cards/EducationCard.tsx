@@ -1,6 +1,7 @@
 import React from "react";
 
 function EducationCard({
+  id,
   degree,
   institution,
   startDate,
@@ -8,7 +9,9 @@ function EducationCard({
   score,
   maxScore,
   proofLink,
+  onEdit,
 }: {
+  id: string;
   degree: string;
   institution: string;
   startDate: string;
@@ -16,7 +19,21 @@ function EducationCard({
   score: string;
   maxScore: string;
   proofLink: string;
+  onEdit?: (cardData: any) => void;
 }) {
+  const handleEdit = () => {
+    onEdit?.({
+      id,
+      degree,
+      institution,
+      startDate,
+      endDate,
+      score,
+      maxScore,
+      proofLink,
+    });
+  };
+
   return (
     <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
       <div className="text-accent">
@@ -37,6 +54,12 @@ function EducationCard({
       >
         Proof
       </a>
+      <button
+        onClick={handleEdit}
+        className="text-accent hover:text-white cursor-pointer text-left"
+      >
+        Edit
+      </button>
     </div>
   );
 }

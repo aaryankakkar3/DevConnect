@@ -3,14 +3,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ username: string }> }
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { username } = await params;
-
-    // Get user ID from middleware headers
+    // Get authenticated user ID from session headers (set by middleware)
     const userId = request.headers.get("x-user-id");
 
     if (!userId) {
@@ -20,11 +15,9 @@ export async function POST(
       );
     }
 
-    // Parse the request body
     const body = await request.json();
     const { title, description, links, linkLabels, images } = body;
 
-    // Create the portfolio project entry
     const portfolioProject = await prisma.portfolioProject.create({
       data: {
         title,
@@ -58,47 +51,69 @@ export async function POST(
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ username: string }> }
-) {
+export async function PUT(request: NextRequest) {
   try {
-    const { username } = await params;
+    // Get authenticated user ID from session headers (set by middleware)
+    const userId = request.headers.get("x-user-id");
 
-    // Find user by username
-    const user = await prisma.user.findUnique({
-      where: { username },
-      select: { id: true },
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { id, title, description, links, linkLabels, images } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Portfolio project ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify the portfolio project belongs to the authenticated user
+    const existingProject = await prisma.portfolioProject.findFirst({
+      where: { id: id, userId },
     });
 
-    if (!user) {
+    if (!existingProject) {
       return NextResponse.json(
-        { success: false, error: "User not found" },
+        {
+          success: false,
+          error: "Portfolio project not found or access denied",
+        },
         { status: 404 }
       );
     }
 
-    // Get portfolio projects for this user
-    const portfolioProjects = await prisma.portfolioProject.findMany({
-      where: { userId: user.id },
-      orderBy: { id: "desc" },
+    const updatedProject = await prisma.portfolioProject.update({
+      where: { id: id },
+      data: {
+        title,
+        description,
+        links: links || [],
+        linkLabels: linkLabels || [],
+        images: images || [],
+      },
     });
 
     return NextResponse.json(
       {
         success: true,
-        data: portfolioProjects,
-        count: portfolioProjects.length,
+        data: updatedProject,
+        message: "Portfolio project updated successfully",
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching portfolio projects:", error);
+    console.error("Error updating portfolio project:", error);
 
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch portfolio projects",
+        error: "Failed to update portfolio project",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

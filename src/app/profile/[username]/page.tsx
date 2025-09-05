@@ -34,6 +34,53 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
     setCertifications((prev) => [newCert, ...prev]);
   };
 
+  // Functions to handle both add and edit operations
+  const handlePortfolioProjectUpdate = (data: any) => {
+    if (data.id && portfolioProjects.some((p) => p.id === data.id)) {
+      // Update existing project
+      setPortfolioProjects((prev) =>
+        prev.map((p) => (p.id === data.id ? data : p))
+      );
+    } else {
+      // Add new project
+      setPortfolioProjects((prev) => [data, ...prev]);
+    }
+  };
+
+  const handleWorkExperienceUpdate = (data: any) => {
+    if (data.id && workExperiences.some((w) => w.id === data.id)) {
+      // Update existing work experience
+      setWorkExperiences((prev) =>
+        prev.map((w) => (w.id === data.id ? data : w))
+      );
+    } else {
+      // Add new work experience
+      setWorkExperiences((prev) => [data, ...prev]);
+    }
+  };
+
+  const handleEducationUpdate = (data: any) => {
+    if (data.id && educations.some((e) => e.id === data.id)) {
+      // Update existing education
+      setEducations((prev) => prev.map((e) => (e.id === data.id ? data : e)));
+    } else {
+      // Add new education
+      setEducations((prev) => [data, ...prev]);
+    }
+  };
+
+  const handleCertificationUpdate = (data: any) => {
+    if (data.id && certifications.some((c) => c.id === data.id)) {
+      // Update existing certification
+      setCertifications((prev) =>
+        prev.map((c) => (c.id === data.id ? data : c))
+      );
+    } else {
+      // Add new certification
+      setCertifications((prev) => [data, ...prev]);
+    }
+  };
+
   // Extract username from params
   useEffect(() => {
     const getUsername = async () => {
@@ -327,22 +374,22 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
         <ProfileSection
           type="Projects"
           data={portfolioProjects}
-          onDataUpdate={addPortfolioProject}
+          onDataUpdate={handlePortfolioProjectUpdate}
         />
         <ProfileSection
           type="Work Experience"
           data={workExperiences}
-          onDataUpdate={addWorkExperience}
+          onDataUpdate={handleWorkExperienceUpdate}
         />
         <ProfileSection
           type="Education"
           data={educations}
-          onDataUpdate={addEducation}
+          onDataUpdate={handleEducationUpdate}
         />
         <ProfileSection
           type="Certifications / Courses"
           data={certifications}
-          onDataUpdate={addCertification}
+          onDataUpdate={handleCertificationUpdate}
         />
         <ProfileSection
           type="Reviews"

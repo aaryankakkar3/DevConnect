@@ -4,20 +4,35 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function PortfolioProjectCard({
+  id,
   title,
   description,
   images,
   links,
   linkLabels,
+  onEdit,
 }: {
+  id: string;
   title: string;
   description: string;
   images: string[];
   links: string[];
   linkLabels: string[];
+  onEdit?: (cardData: any) => void;
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleEdit = () => {
+    onEdit?.({
+      id,
+      title,
+      description,
+      images,
+      links,
+      linkLabels,
+    });
+  };
 
   // Auto-rotate images every 3 seconds
   useEffect(() => {
@@ -108,6 +123,12 @@ function PortfolioProjectCard({
           </React.Fragment>
         ))}
       </div>
+      <button
+        onClick={handleEdit}
+        className="text-accent hover:text-white cursor-pointer text-left"
+      >
+        Edit
+      </button>
     </div>
   );
 }
