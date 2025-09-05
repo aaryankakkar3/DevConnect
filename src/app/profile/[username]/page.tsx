@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import ProfileSection from "../../components/ProfileSection";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 
 function Profile({ params }: { params: Promise<{ username: string }> }) {
   // State for storing fetched data - separate arrays for each type
@@ -16,6 +17,12 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState<string>("");
+  
+  // Use the current user hook
+  const { currentUser, loading: userLoading, error: userError } = useCurrentUser();
+  
+  // Check if current user is the profile owner
+  const isOwner = Boolean(currentUser && username && currentUser.username === username);
 
   // Functions to add new data to arrays (optimistic updates)
   const addPortfolioProject = (newProject: any) => {
@@ -375,26 +382,31 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
           type="Projects"
           data={portfolioProjects}
           onDataUpdate={handlePortfolioProjectUpdate}
+          isOwner={isOwner}
         />
         <ProfileSection
           type="Work Experience"
           data={workExperiences}
           onDataUpdate={handleWorkExperienceUpdate}
+          isOwner={isOwner}
         />
         <ProfileSection
           type="Education"
           data={educations}
           onDataUpdate={handleEducationUpdate}
+          isOwner={isOwner}
         />
         <ProfileSection
           type="Certifications / Courses"
           data={certifications}
           onDataUpdate={handleCertificationUpdate}
+          isOwner={isOwner}
         />
         <ProfileSection
           type="Reviews"
           data={reviews}
           onDataUpdate={() => {}} // Reviews don't have optimistic updates yet
+          isOwner={isOwner}
         />
       </div>
     </div>

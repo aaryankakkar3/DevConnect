@@ -13,10 +13,12 @@ function ProfileSection({
   type,
   data,
   onDataUpdate,
+  isOwner = false,
 }: {
   type: string;
   data: any[];
   onDataUpdate?: (newData: any) => void;
+  isOwner?: boolean;
 }) {
   // Handle empty data gracefully
   const safeData = data || [];
@@ -47,7 +49,7 @@ function ProfileSection({
               images={card.images}
               links={card.links}
               linkLabels={card.linkLabels}
-              onEdit={handleEdit}
+              onEdit={isOwner ? handleEdit : undefined}
             />
           ))}
         {type === "Work Experience" &&
@@ -61,7 +63,7 @@ function ProfileSection({
               endDate={card.endDate}
               description={card.description}
               proofLink={card.proofLink}
-              onEdit={handleEdit}
+              onEdit={isOwner ? handleEdit : undefined}
             />
           ))}
         {type === "Education" &&
@@ -76,7 +78,7 @@ function ProfileSection({
               score={card.score}
               maxScore={card.maxScore}
               proofLink={card.proofLink}
-              onEdit={handleEdit}
+              onEdit={isOwner ? handleEdit : undefined}
             />
           ))}
         {type === "Certifications / Courses" &&
@@ -90,7 +92,7 @@ function ProfileSection({
               endDate={card.endDate}
               description={card.description}
               proofUrl={card.proofLink}
-              onEdit={handleEdit}
+              onEdit={isOwner ? handleEdit : undefined}
             />
           ))}
         {type === "Reviews" &&
@@ -103,7 +105,7 @@ function ProfileSection({
               imageUrl={card.profilePicture}
             />
           ))}
-        {type != "Reviews" && (
+        {type != "Reviews" && isOwner && (
           <div className="w-full h-full min-h-50 border-2 border-dashed border-bglight flex justify-center items-center">
             <CirclePlus
               className="w-15 h-15 text-bglight hover:text-muted"

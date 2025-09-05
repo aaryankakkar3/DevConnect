@@ -50,12 +50,14 @@ function CertificationCard({
       >
         Proof
       </a>
-      <button
-        onClick={handleEdit}
-        className="text-accent hover:text-white cursor-pointer text-left"
-      >
-        Edit
-      </button>
+      {onEdit && (
+        <button
+          onClick={handleEdit}
+          className="text-accent hover:text-white cursor-pointer text-left"
+        >
+          Edit
+        </button>
+      )}
     </div>
   );
 }
