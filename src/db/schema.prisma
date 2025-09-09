@@ -12,6 +12,7 @@ model User {
   id                         String             @id @default(uuid())
   email                      String             @unique
   name                       String?
+  bio                        String             @default("")
   clearance                  Clearance
   createdAt                  DateTime           @default(now())
   updatedAt                  DateTime           @default(now()) @updatedAt

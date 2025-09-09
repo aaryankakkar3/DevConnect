@@ -18,7 +18,19 @@ export async function GET(
     // Fetch user with all related data in one query
     const userProfile = await prisma.user.findUnique({
       where: { username },
-      include: {
+      select: {
+        // Only select fields actually used in the profile page
+        id: true,
+        username: true,
+        name: true,
+        bio: true,
+        profilePicture: true,
+        dob: true,
+        gender: true,
+        location: true,
+        skills: true,
+        clearance: true,
+        // Include related data
         portfolioProjects: {
           orderBy: { id: "desc" },
         },
