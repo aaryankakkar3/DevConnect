@@ -62,7 +62,7 @@ function PortfolioProjectCard({
   return (
     <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
       <div
-        className="relative w-full h-48 overflow-hidden"
+        className="relative w-full aspect-video overflow-hidden"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -108,29 +108,31 @@ function PortfolioProjectCard({
       </div>
       <div className="text-accent">{title}</div>
       <div className="">{description}</div>
-      <div className="text-softaccent">
-        {links.map((link, index) => (
-          <React.Fragment key={index}>
-            <a
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {linkLabels[index]}
-            </a>
-            <br />
-          </React.Fragment>
-        ))}
+      <div className="flex flex-row justify-between items-end">
+        <div className="text-softaccent">
+          {links.map((link, index) => (
+            <React.Fragment key={index}>
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {linkLabels[index]}
+              </a>
+              <br />
+            </React.Fragment>
+          ))}
+        </div>
+        {onEdit && (
+          <button
+            onClick={handleEdit}
+            className="text-muted2 hover:text-white cursor-pointer text-left"
+          >
+            Edit
+          </button>
+        )}
       </div>
-      {onEdit && (
-        <button
-          onClick={handleEdit}
-          className="text-accent hover:text-white cursor-pointer text-left"
-        >
-          Edit
-        </button>
-      )}
     </div>
   );
 }

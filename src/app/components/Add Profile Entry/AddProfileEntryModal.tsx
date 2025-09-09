@@ -1,20 +1,36 @@
-import { SquareMinus, SquarePlus } from "lucide-react";
+import { SquareMinus, SquarePlus, X } from "lucide-react";
 import React, { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 function EditProjectModal({
   formData,
   setFormData,
+  selectedImages,
+  setSelectedImages,
 }: {
   formData: any;
   setFormData: (data: any) => void;
+  selectedImages: File[];
+  setSelectedImages: (files: File[]) => void;
 }) {
-  const [linkInputs, setLinkInputs] = useState([{ id: 1 }]);
+  // Initialize linkInputs based on existing data in edit mode
+  const [linkInputs, setLinkInputs] = useState(() => {
+    // If editing and there are existing links, create inputs for each
+    if (
+      formData.links &&
+      formData.links.length > 0 &&
+      formData.links[0] !== ""
+    ) {
+      return formData.links.map((_: any, index: number) => ({ id: index + 1 }));
+    }
+    // Default to one input for new projects
+    return [{ id: 1 }];
+  });
 
   const addLinkInput = () => {
     const newId =
       linkInputs.length > 0
-        ? Math.max(...linkInputs.map((input) => input.id)) + 1
+        ? Math.max(...linkInputs.map((input: any) => input.id)) + 1
         : 1;
     setLinkInputs([...linkInputs, { id: newId }]);
     setFormData({
@@ -24,7 +40,31 @@ function EditProjectModal({
     });
   };
 
-  const removeLinkInput = () => {
+  const removeLinkInput = (indexToRemove: number) => {
+    if (linkInputs.length > 1) {
+      // Remove the input at the specific index
+      const newLinkInputs = linkInputs.filter(
+        (_: any, index: number) => index !== indexToRemove
+      );
+      setLinkInputs(newLinkInputs);
+
+      // Remove the corresponding link and label data
+      const newLinks = formData.links.filter(
+        (_: any, index: number) => index !== indexToRemove
+      );
+      const newLinkLabels = formData.linkLabels.filter(
+        (_: any, index: number) => index !== indexToRemove
+      );
+
+      setFormData({
+        ...formData,
+        links: newLinks,
+        linkLabels: newLinkLabels,
+      });
+    }
+  };
+
+  const removeLastLinkInput = () => {
     if (linkInputs.length > 1) {
       setLinkInputs(linkInputs.slice(0, -1));
       setFormData({
@@ -33,6 +73,48 @@ function EditProjectModal({
         linkLabels: formData.linkLabels.slice(0, -1),
       });
     }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+
+    // Validate file types
+    const validFiles = files.filter((file) => {
+      const isValidType = file.type.startsWith("image/");
+      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
+
+      if (!isValidType) {
+        toast.error(`${file.name} is not a valid image file`);
+        return false;
+      }
+      if (!isValidSize) {
+        toast.error(`${file.name} is too large (max 10MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    // Check total image limit
+    const totalImages = selectedImages.length + validFiles.length;
+    if (totalImages > 10) {
+      toast.error(
+        `Maximum 10 images allowed. You're trying to add ${totalImages} images.`
+      );
+      return;
+    }
+
+    setSelectedImages([...selectedImages, ...validFiles]);
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(selectedImages.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    const updatedImages = formData.images.filter(
+      (_: any, i: number) => i !== index
+    );
+    setFormData({ ...formData, images: updatedImages });
   };
 
   return (
@@ -46,21 +128,101 @@ function EditProjectModal({
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         />
       </label>
-      {/* Insert multiple images */}
+      <label className="flex flex-col gap-2 w-full">
+        Images
+        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+          <input
+            type="file"
+            id="image-upload"
+            multiple
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <label
+            htmlFor="image-upload"
+            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+          >
+            Choose Images
+          </label>
+        </div>
+      </label>
+
+      {/* Display existing images (for edit mode) */}
+      {formData.images &&
+        formData.images.length > 0 &&
+        formData.images[0] !== "" && (
+          <div className="flex flex-col gap-2 w-full">
+            <span className="">Existing Images:</span>
+            <div className="flex flex-wrap gap-2">
+              {formData.images.map((imageUrl: string, index: number) => (
+                <div
+                  key={`existing-${index}`}
+                  className="flex items-center gap-2 bg-bglight p-2 rounded"
+                >
+                  <span className="text-s truncate max-w-40">
+                    {imageUrl.split("/").pop()?.split("?")[0] || "Image"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(index)}
+                    className="text-muted2 hover:text-white cursor-pointer"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      {/* Display selected new images */}
+      {selectedImages.length > 0 && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">New Images to Upload:</span>
+          <div className="flex flex-wrap gap-2">
+            {selectedImages.map((file, index) => (
+              <div
+                key={`new-${index}`}
+                className="flex items-center gap-2 bg-bglight p-2 rounded"
+              >
+                <span className="text-s truncate max-w-40">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="text-muted2 hover:text-white cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <label className="flex flex-col gap-2 w-full">
         Description
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        <textarea
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
           value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          onChange={(e) => {
+            setFormData({ ...formData, description: e.target.value });
+            // Auto-resize textarea
+            e.target.style.height = "auto";
+            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+          }}
+          onInput={(e) => {
+            // Also handle onInput for better responsiveness
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = "auto";
+            target.style.height = Math.max(59, target.scrollHeight) + "px";
+          }}
+          style={{ overflowY: "hidden" }}
+          rows={1}
         />
       </label>
       <div className="flex flex-col gap-2">
-        {linkInputs.map((linkInput, index) => (
-          <div key={linkInput.id} className="flex flex-row gap-4">
+        {linkInputs.map((linkInput: any, index: number) => (
+          <div key={linkInput.id} className="flex flex-row gap-4 items-end">
             <label className="flex flex-col gap-2 w-full">
               Proof Link
               <input
@@ -87,14 +249,24 @@ function EditProjectModal({
                 }}
               />
             </label>
+            <div className="flex h-[51px] w-fit justify-center items-center">
+              <button
+                type="button"
+                onClick={() => removeLinkInput(index)}
+                className="text-[28px] text-muted2 hover:text-white cursor-pointer"
+                disabled={linkInputs.length === 1}
+              >
+                x
+              </button>
+            </div>
           </div>
         ))}
-        <div className="w-full flex justify-end gap-2">
+        <div className="w-full flex justify-start gap-2">
           {linkInputs.length > 1 && (
             <SquareMinus
               strokeWidth={1}
               className="w-9 h-9 text-muted hover:text-white cursor-pointer"
-              onClick={removeLinkInput}
+              onClick={removeLastLinkInput}
             />
           )}
           <SquarePlus
@@ -110,10 +282,44 @@ function EditProjectModal({
 function EditWorkModal({
   formData,
   setFormData,
+  selectedImages,
+  setSelectedImages,
 }: {
   formData: any;
   setFormData: (data: any) => void;
+  selectedImages: File[];
+  setSelectedImages: (files: File[]) => void;
 }) {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const file = files[0]; // Only take the first file
+
+    // Validate file type
+    const isValidType = file.type.startsWith("image/");
+    const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
+
+    if (!isValidType) {
+      toast.error(`${file.name} is not a valid image file`);
+      return;
+    }
+    if (!isValidSize) {
+      toast.error(`${file.name} is too large (max 10MB)`);
+      return;
+    }
+
+    setSelectedImages([file]); // Only one image
+  };
+
+  const removeImage = () => {
+    setSelectedImages([]);
+  };
+
+  const removeExistingImage = () => {
+    setFormData({ ...formData, proofLink: "" });
+  };
+
   return (
     <>
       <label className="flex flex-col gap-2 w-full">
@@ -138,13 +344,23 @@ function EditWorkModal({
       </label>
       <label className="flex flex-col gap-2 w-full">
         Description
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        <textarea
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
           value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          onChange={(e) => {
+            setFormData({ ...formData, description: e.target.value });
+            // Auto-resize textarea
+            e.target.style.height = "auto";
+            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+          }}
+          onInput={(e) => {
+            // Also handle onInput for better responsiveness
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = "auto";
+            target.style.height = Math.max(59, target.scrollHeight) + "px";
+          }}
+          style={{ overflowY: "hidden" }}
+          rows={1}
         />
       </label>
       <div className="flex flex-row gap-4">
@@ -172,26 +388,109 @@ function EditWorkModal({
         </label>
       </div>
       <label className="flex flex-col gap-2 w-full">
-        Proof Link
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.proofLink}
-          onChange={(e) =>
-            setFormData({ ...formData, proofLink: e.target.value })
-          }
-        />
+        Proof Image
+        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+          <input
+            type="file"
+            id="work-image-upload"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <label
+            htmlFor="work-image-upload"
+            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+          >
+            Choose Image
+          </label>
+        </div>
       </label>
+
+      {/* Display existing image (for edit mode) */}
+      {formData.proofLink && formData.proofLink.trim() !== "" && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">Existing Image:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeExistingImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Display selected new image */}
+      {selectedImages.length > 0 && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">New Image to Upload:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {selectedImages[0].name}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 function EditEducationModal({
   formData,
   setFormData,
+  selectedImages,
+  setSelectedImages,
 }: {
   formData: any;
   setFormData: (data: any) => void;
+  selectedImages: File[];
+  setSelectedImages: (files: File[]) => void;
 }) {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const file = files[0]; // Only take the first file
+
+    // Validate file type
+    const isValidType = file.type.startsWith("image/");
+    const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
+
+    if (!isValidType) {
+      toast.error(`${file.name} is not a valid image file`);
+      return;
+    }
+    if (!isValidSize) {
+      toast.error(`${file.name} is too large (max 10MB)`);
+      return;
+    }
+
+    setSelectedImages([file]); // Only one image
+  };
+
+  const removeImage = () => {
+    setSelectedImages([]);
+  };
+
+  const removeExistingImage = () => {
+    setFormData({ ...formData, proofLink: "" });
+  };
+
   return (
     <>
       <label className="flex flex-col gap-2 w-full">
@@ -269,27 +568,109 @@ function EditEducationModal({
         </label>
       </div>
       <label className="flex flex-col gap-2 w-full">
-        Proof Link
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.proofLink}
-          onChange={(e) =>
-            setFormData({ ...formData, proofLink: e.target.value })
-          }
-        />
+        Proof Image
+        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+          <input
+            type="file"
+            id="education-image-upload"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <label
+            htmlFor="education-image-upload"
+            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+          >
+            Choose Image
+          </label>
+        </div>
       </label>
-      {/* Upload Picture Proof */}
+
+      {/* Display existing image (for edit mode) */}
+      {formData.proofLink && formData.proofLink.trim() !== "" && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">Existing Image:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeExistingImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Display selected new image */}
+      {selectedImages.length > 0 && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">New Image to Upload:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {selectedImages[0].name}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 function EditCourseModal({
   formData,
   setFormData,
+  selectedImages,
+  setSelectedImages,
 }: {
   formData: any;
   setFormData: (data: any) => void;
+  selectedImages: File[];
+  setSelectedImages: (files: File[]) => void;
 }) {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const file = files[0]; // Only take the first file
+
+    // Validate file type
+    const isValidType = file.type.startsWith("image/");
+    const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
+
+    if (!isValidType) {
+      toast.error(`${file.name} is not a valid image file`);
+      return;
+    }
+    if (!isValidSize) {
+      toast.error(`${file.name} is too large (max 10MB)`);
+      return;
+    }
+
+    setSelectedImages([file]); // Only one image
+  };
+
+  const removeImage = () => {
+    setSelectedImages([]);
+  };
+
+  const removeExistingImage = () => {
+    setFormData({ ...formData, proofLink: "" });
+  };
+
   return (
     <>
       <label className="flex flex-col gap-2 w-full">
@@ -314,13 +695,23 @@ function EditCourseModal({
       </label>
       <label className="flex flex-col gap-2 w-full">
         Description
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+        <textarea
+          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
           value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          onChange={(e) => {
+            setFormData({ ...formData, description: e.target.value });
+            // Auto-resize textarea
+            e.target.style.height = "auto";
+            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+          }}
+          onInput={(e) => {
+            // Also handle onInput for better responsiveness
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = "auto";
+            target.style.height = Math.max(59, target.scrollHeight) + "px";
+          }}
+          style={{ overflowY: "hidden" }}
+          rows={1}
         />
       </label>
       <div className="flex flex-row gap-4">
@@ -348,17 +739,65 @@ function EditCourseModal({
         </label>
       </div>
       <label className="flex flex-col gap-2 w-full">
-        Proof Link
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.proofLink}
-          onChange={(e) =>
-            setFormData({ ...formData, proofLink: e.target.value })
-          }
-        />
+        Proof Image
+        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+          <input
+            type="file"
+            id="course-image-upload"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <label
+            htmlFor="course-image-upload"
+            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+          >
+            Choose Image
+          </label>
+        </div>
       </label>
-      {/* Insert image proof */}
+
+      {/* Display existing image (for edit mode) */}
+      {formData.proofLink && formData.proofLink.trim() !== "" && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">Existing Image:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeExistingImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Display selected new image */}
+      {selectedImages.length > 0 && (
+        <div className="flex flex-col gap-2 w-full">
+          <span className="">New Image to Upload:</span>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
+              <span className="text-s truncate max-w-40">
+                {selectedImages[0].name}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeImage()}
+                className="text-muted2 hover:text-white cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -375,6 +814,7 @@ function AddProfileEntryModal({
   editData?: any;
 }) {
   const isEditMode = editData !== null;
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     id: editData?.id || "",
@@ -387,7 +827,7 @@ function AddProfileEntryModal({
     endDate: editData?.endDate || "",
     links: editData?.links || [""],
     linkLabels: editData?.linkLabels || [""],
-    images: editData?.images || [""],
+    images: editData?.images || [],
     degree: editData?.degree || "",
     institution: editData?.institution || "",
     score: editData?.score || "",
@@ -395,6 +835,37 @@ function AddProfileEntryModal({
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // Helper function to upload images to Cloudinary
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (files.length === 0) return [];
+
+    const imageUploadPromises = files.map(async (file) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+    });
+
+    const base64Images = await Promise.all(imageUploadPromises);
+
+    const response = await fetch("/api/upload/images", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ images: base64Images }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload images");
+    }
+
+    const result = await response.json();
+    return result.urls;
+  };
 
   const handleSubmit = async (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -407,6 +878,20 @@ function AddProfileEntryModal({
     );
 
     try {
+      let uploadedImageUrls: string[] = [];
+
+      // Upload new images if any are selected
+      if (selectedImages.length > 0) {
+        toast.loading("Uploading images...", { id: loadingToast });
+        uploadedImageUrls = await uploadImages(selectedImages);
+      }
+
+      // Combine existing images with newly uploaded ones
+      const allImages = [
+        ...(formData.images || []),
+        ...uploadedImageUrls,
+      ].filter((img) => img && img.trim() !== "");
+
       let endpoint = "";
       let payload = {};
       const method = isEditMode ? "PUT" : "POST";
@@ -423,7 +908,7 @@ function AddProfileEntryModal({
             linkLabels: formData.linkLabels.filter(
               (label: any) => label.trim() !== ""
             ),
-            images: formData.images.filter((img: any) => img.trim() !== ""),
+            images: allImages,
           };
           break;
 
@@ -436,7 +921,8 @@ function AddProfileEntryModal({
             company: formData.company,
             startDate: formData.startDate,
             endDate: formData.endDate,
-            proofLink: formData.proofLink,
+            proofLink:
+              allImages.length > 0 ? allImages[0] : formData.proofLink || "",
           };
           break;
 
@@ -450,7 +936,8 @@ function AddProfileEntryModal({
             maxScore: formData.maxScore,
             startDate: formData.startDate,
             endDate: formData.endDate,
-            proofLink: formData.proofLink,
+            proofLink:
+              allImages.length > 0 ? allImages[0] : formData.proofLink || "",
           };
           break;
 
@@ -463,7 +950,8 @@ function AddProfileEntryModal({
             issuingOrganization: formData.issuingOrganization,
             startDate: formData.startDate,
             endDate: formData.endDate,
-            proofLink: formData.proofLink,
+            proofLink:
+              allImages.length > 0 ? allImages[0] : formData.proofLink || "",
           };
           break;
 
@@ -516,21 +1004,48 @@ function AddProfileEntryModal({
     switch (type) {
       case "Projects":
         return (
-          <EditProjectModal formData={formData} setFormData={setFormData} />
+          <EditProjectModal
+            formData={formData}
+            setFormData={setFormData}
+            selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
+          />
         );
       case "Work Experience":
-        return <EditWorkModal formData={formData} setFormData={setFormData} />;
+        return (
+          <EditWorkModal
+            formData={formData}
+            setFormData={setFormData}
+            selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
+          />
+        );
       case "Education":
         return (
-          <EditEducationModal formData={formData} setFormData={setFormData} />
+          <EditEducationModal
+            formData={formData}
+            setFormData={setFormData}
+            selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
+          />
         );
       case "Certifications / Courses":
         return (
-          <EditCourseModal formData={formData} setFormData={setFormData} />
+          <EditCourseModal
+            formData={formData}
+            setFormData={setFormData}
+            selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
+          />
         );
       default:
         return (
-          <EditProjectModal formData={formData} setFormData={setFormData} />
+          <EditProjectModal
+            formData={formData}
+            setFormData={setFormData}
+            selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
+          />
         );
     }
   };

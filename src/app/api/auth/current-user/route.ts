@@ -8,23 +8,17 @@ export async function GET(request: NextRequest) {
     const userEmail = request.headers.get("x-user-email");
 
     if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Fetch user's username from database
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { username: true }
+      select: { username: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json({

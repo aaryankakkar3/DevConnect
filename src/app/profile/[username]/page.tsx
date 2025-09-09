@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import ProfileSection from "../../components/ProfileSection";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
+import EditProfileModal from "@/app/components/EditProfileModal";
 
 function Profile({ params }: { params: Promise<{ username: string }> }) {
   // State for storing fetched data - separate arrays for each type
@@ -17,12 +18,18 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [username, setUsername] = useState<string>("");
-  
+
   // Use the current user hook
-  const { currentUser, loading: userLoading, error: userError } = useCurrentUser();
-  
+  const {
+    currentUser,
+    loading: userLoading,
+    error: userError,
+  } = useCurrentUser();
+
   // Check if current user is the profile owner
-  const isOwner = Boolean(currentUser && username && currentUser.username === username);
+  const isOwner = Boolean(
+    currentUser && username && currentUser.username === username
+  );
 
   // Functions to add new data to arrays (optimistic updates)
   const addPortfolioProject = (newProject: any) => {
@@ -359,7 +366,10 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
               </p>
             </div>
             <p className="text-muted2">
-              {profileData.dob && formatDate(profileData.dob)}
+              {[
+                profileData.dob && formatDate(profileData.dob),
+                console.log("DOB:", formatDate(profileData.dob)),
+              ]}
               {profileData.dob && profileData.location && " | "}
               {profileData.location}
               {(profileData.dob || profileData.location) &&
@@ -370,12 +380,6 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
             {profileData.skills && profileData.skills.length > 0 && (
               <p>{profileData.skills.join(" | ")}</p>
             )}
-            <p>
-              Welcome to {profileData.name || profileData.username}'s profile!
-              {profileData.clearance === "dev"
-                ? " Check out their portfolio and experience below."
-                : " Browse their projects and reviews."}
-            </p>
           </div>
         </div>
         <ProfileSection
@@ -409,6 +413,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
           isOwner={isOwner}
         />
       </div>
+      {/* <EditProfileModal /> */}
     </div>
   );
 }

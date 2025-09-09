@@ -42,22 +42,24 @@ function CertificationCard({
       <div className="text-muted2">
         From {startDate} to {endDate}
       </div>
-      <a
-        className="text-softaccent"
-        href={proofUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Proof
-      </a>
-      {onEdit && (
-        <button
-          onClick={handleEdit}
-          className="text-accent hover:text-white cursor-pointer text-left"
+      <div className="flex justify-between">
+        <a
+          className="text-softaccent"
+          href={proofUrl}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Edit
-        </button>
-      )}
+          Proof
+        </a>
+        {onEdit && (
+          <button
+            onClick={handleEdit}
+            className="text-muted2 hover:text-white cursor-pointer text-left"
+          >
+            Edit
+          </button>
+        )}
+      </div>
     </div>
   );
 }

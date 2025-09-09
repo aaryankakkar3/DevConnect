@@ -4,8 +4,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only process API routes (excluding specific auth routes but including current-user)
-  if (!pathname.startsWith("/api/") || 
-      (pathname.startsWith("/api/auth/") && !pathname.includes("/current-user"))) {
+  if (
+    !pathname.startsWith("/api/") ||
+    (pathname.startsWith("/api/auth/") && !pathname.includes("/current-user"))
+  ) {
     return NextResponse.next();
   }
 
