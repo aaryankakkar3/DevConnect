@@ -51,46 +51,58 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
 
   // Functions to handle both add and edit operations
   const handlePortfolioProjectUpdate = (data: any) => {
-    if (data.id && portfolioProjects.some((p) => p.id === data.id)) {
+    if (data?.deleted && data?.id) {
+      // Handle deletion
+      setPortfolioProjects((prev) => prev.filter((p) => p.id !== data.id));
+    } else if (data?.id && portfolioProjects.some((p) => p.id === data.id)) {
       // Update existing project
       setPortfolioProjects((prev) =>
         prev.map((p) => (p.id === data.id ? data : p))
       );
-    } else {
+    } else if (data?.id) {
       // Add new project
       setPortfolioProjects((prev) => [data, ...prev]);
     }
   };
 
   const handleWorkExperienceUpdate = (data: any) => {
-    if (data.id && workExperiences.some((w) => w.id === data.id)) {
+    if (data?.deleted && data?.id) {
+      // Handle deletion
+      setWorkExperiences((prev) => prev.filter((w) => w.id !== data.id));
+    } else if (data?.id && workExperiences.some((w) => w.id === data.id)) {
       // Update existing work experience
       setWorkExperiences((prev) =>
         prev.map((w) => (w.id === data.id ? data : w))
       );
-    } else {
+    } else if (data?.id) {
       // Add new work experience
       setWorkExperiences((prev) => [data, ...prev]);
     }
   };
 
   const handleEducationUpdate = (data: any) => {
-    if (data.id && educations.some((e) => e.id === data.id)) {
+    if (data?.deleted && data?.id) {
+      // Handle deletion
+      setEducations((prev) => prev.filter((e) => e.id !== data.id));
+    } else if (data?.id && educations.some((e) => e.id === data.id)) {
       // Update existing education
       setEducations((prev) => prev.map((e) => (e.id === data.id ? data : e)));
-    } else {
+    } else if (data?.id) {
       // Add new education
       setEducations((prev) => [data, ...prev]);
     }
   };
 
   const handleCertificationUpdate = (data: any) => {
-    if (data.id && certifications.some((c) => c.id === data.id)) {
+    if (data?.deleted && data?.id) {
+      // Handle deletion
+      setCertifications((prev) => prev.filter((c) => c.id !== data.id));
+    } else if (data?.id && certifications.some((c) => c.id === data.id)) {
       // Update existing certification
       setCertifications((prev) =>
         prev.map((c) => (c.id === data.id ? data : c))
       );
-    } else {
+    } else if (data?.id) {
       // Add new certification
       setCertifications((prev) => [data, ...prev]);
     }
@@ -196,6 +208,8 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
     return gender.charAt(0).toUpperCase() + gender.slice(1);
   };
 
+  const isThisADevProfile = profileData.clearance === "dev";
+
   return (
     <div className="p-10 flex flex-col gap-10">
       <Navbar />
@@ -240,9 +254,11 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
               {profileData.gender && formatGender(profileData.gender)}
             </p>
             {profileData.bio && <p>{profileData.bio}</p>}
-            {profileData.skills && profileData.skills.length > 0 && (
-              <p>{profileData.skills.join(" | ")}</p>
-            )}
+            {isThisADevProfile &&
+              profileData.skills &&
+              profileData.skills.length > 0 && (
+                <p>{profileData.skills.join(" | ")}</p>
+              )}
             {isOwner && (
               <button
                 onClick={() => {
@@ -255,30 +271,38 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
             )}
           </div>
         </div>
-        <ProfileSection
-          type="Projects"
-          data={portfolioProjects}
-          onDataUpdate={handlePortfolioProjectUpdate}
-          isOwner={isOwner}
-        />
-        <ProfileSection
-          type="Work Experience"
-          data={workExperiences}
-          onDataUpdate={handleWorkExperienceUpdate}
-          isOwner={isOwner}
-        />
-        <ProfileSection
-          type="Education"
-          data={educations}
-          onDataUpdate={handleEducationUpdate}
-          isOwner={isOwner}
-        />
-        <ProfileSection
-          type="Certifications / Courses"
-          data={certifications}
-          onDataUpdate={handleCertificationUpdate}
-          isOwner={isOwner}
-        />
+        {isThisADevProfile && (
+          <ProfileSection
+            type="Projects"
+            data={portfolioProjects}
+            onDataUpdate={handlePortfolioProjectUpdate}
+            isOwner={isOwner}
+          />
+        )}
+        {isThisADevProfile && (
+          <ProfileSection
+            type="Work Experience"
+            data={workExperiences}
+            onDataUpdate={handleWorkExperienceUpdate}
+            isOwner={isOwner}
+          />
+        )}
+        {isThisADevProfile && (
+          <ProfileSection
+            type="Education"
+            data={educations}
+            onDataUpdate={handleEducationUpdate}
+            isOwner={isOwner}
+          />
+        )}
+        {isThisADevProfile && (
+          <ProfileSection
+            type="Certifications / Courses"
+            data={certifications}
+            onDataUpdate={handleCertificationUpdate}
+            isOwner={isOwner}
+          />
+        )}
         <ProfileSection
           type="Reviews"
           data={reviews}
@@ -291,6 +315,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
           onClose={() => setProfileModalOpen(false)}
           profileData={profileData}
           setProfileData={setProfileData}
+          isThisADevProfile={isThisADevProfile}
         />
       )}
     </div>

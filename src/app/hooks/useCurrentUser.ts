@@ -6,6 +6,7 @@ interface CurrentUser {
   username: string;
   email: string;
   id: string;
+  clearance?: string;
 }
 
 export function useCurrentUser() {

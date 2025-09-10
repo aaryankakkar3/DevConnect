@@ -138,3 +138,62 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    // Get authenticated user ID from session headers (set by middleware)
+    const userId = request.headers.get("x-user-id");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Education ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify the education belongs to the authenticated user
+    const existingEducation = await prisma.education.findFirst({
+      where: { id: id, userId },
+    });
+
+    if (!existingEducation) {
+      return NextResponse.json(
+        { success: false, error: "Education not found or access denied" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.education.delete({
+      where: { id: id },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Education deleted successfully",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting education:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to delete education",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}

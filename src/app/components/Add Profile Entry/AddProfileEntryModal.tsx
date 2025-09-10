@@ -112,6 +112,78 @@ function AddProfileEntryModal({
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleDelete = async () => {
+    if (!formData.id) {
+      toast.error("No entry to delete");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete this ${type.toLowerCase()}? This action cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    setIsLoading(true);
+
+    // Show loading toast
+    const loadingToast = toast.loading(`Deleting ${type}...`);
+
+    try {
+      let endpoint = "";
+
+      switch (type) {
+        case "Projects":
+          endpoint = `/api/profile/portfolio-projects`;
+          break;
+        case "Work Experience":
+          endpoint = `/api/profile/work-experiences`;
+          break;
+        case "Education":
+          endpoint = `/api/profile/educations`;
+          break;
+        case "Certifications / Courses":
+          endpoint = `/api/profile/certifications`;
+          break;
+        default:
+          throw new Error("Unknown form type");
+      }
+
+      const response = await fetch(endpoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ id: formData.id }),
+      });
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(
+          `Error deleting ${type}: ${errorData.error || response.statusText}`
+        );
+        return;
+      }
+
+      toast.success(`${type} deleted successfully!`);
+
+      // Call onSuccess with deletion info to update the parent component
+      onSuccess?.({ deleted: true, id: formData.id });
+      onClose();
+    } catch (error) {
+      console.error("Error deleting:", error);
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+      toast.error(`Error deleting ${type}. Please try again.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     console.log("Frontend Form Data", formData);
@@ -318,7 +390,7 @@ function AddProfileEntryModal({
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 h-fit bg-bgdark border border-bglight flex flex-col p-10 gap-8">
+      <form className="relative z-20 w-175 bg-bgdark border border-bglight flex flex-col p-10 gap-8 max-h-[90vh] overflow-y-auto">
         <h2 className="text-l">
           <span className="text-accent">{isEditMode ? "Edit" : "Add"} </span>
           {type}
@@ -335,10 +407,20 @@ function AddProfileEntryModal({
               ? `${isEditMode ? "Updating" : "Adding"}...`
               : `${isEditMode ? "Update" : "Add"}`}
           </button>
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isLoading}
+              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-white font-semibold hover:opacity-75 disabled:opacity-50"
+            >
+              {isLoading ? "Deleting..." : "Delete"}
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-white font-semibold hover:opacity-75"
+            className="cursor-pointer px-8 py-4 bg-bglight w-fit text-white font-semibold hover:opacity-75"
             disabled={isLoading}
           >
             Cancel

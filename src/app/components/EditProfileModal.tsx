@@ -7,10 +7,12 @@ function EditProfileModal({
   onClose,
   profileData,
   setProfileData,
+  isThisADevProfile,
 }: {
   onClose: () => void;
   profileData: any;
   setProfileData: (data: any) => void;
+  isThisADevProfile: boolean;
 }) {
   const [formData, setFormData] = useState({
     name: profileData.name || "",
@@ -100,7 +102,7 @@ function EditProfileModal({
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 h-fit bg-bgdark border border-bglight flex flex-col p-10 gap-8">
+      <form className="relative z-20 w-175 max-h-[90vh] overflow-y-auto bg-bgdark border border-bglight flex flex-col p-10 gap-8">
         <h2 className="text-l">
           <span className="text-accent">Edit </span>
           Profile
@@ -115,7 +117,7 @@ function EditProfileModal({
           </label>
           <label className="flex flex-col gap-2 w-full">
             Date of Birth
-            <div className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0">
+            <div className="py-4 px-8 h-[51px] bg-bglight focus:outline-none focus:ring-0">
               {formData.dob ? new Date(formData.dob).toLocaleDateString() : ""}
             </div>
           </label>
@@ -203,17 +205,19 @@ function EditProfileModal({
               rows={1}
             />
           </label>
-          <label className="flex flex-col gap-2 w-full">
-            Skills
-            <input
-              type="text"
-              className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-              value={formData.skills}
-              onChange={(e) =>
-                setFormData({ ...formData, skills: e.target.value })
-              }
-            />
-          </label>
+          {isThisADevProfile && (
+            <label className="flex flex-col gap-2 w-full">
+              Skills
+              <input
+                type="text"
+                className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+                value={formData.skills}
+                onChange={(e) =>
+                  setFormData({ ...formData, skills: e.target.value })
+                }
+              />
+            </label>
+          )}
           <label className="flex flex-col gap-2 w-full">
             Location
             <input

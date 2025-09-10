@@ -11,10 +11,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch user's username from database
+    // Fetch user's username and clearance from database
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { username: true },
+      select: {
+        username: true,
+        clearance: true,
+      },
     });
 
     if (!user) {
@@ -27,6 +30,7 @@ export async function GET(request: NextRequest) {
         id: userId,
         email: userEmail || "",
         username: user.username,
+        clearance: user.clearance,
       },
     });
   } catch (error) {
