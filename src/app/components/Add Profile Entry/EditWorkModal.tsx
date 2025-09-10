@@ -1,6 +1,9 @@
 import React from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import SingleInputField from "./SingleInputField";
+import DescriptionInput from "./DescriptionInput";
+import ProofImageInputField from "./ProofImageInputField";
 
 export default function EditWorkModal({
   formData,
@@ -45,89 +48,47 @@ export default function EditWorkModal({
 
   return (
     <>
-      <label className="flex flex-col gap-2 w-full">
-        Position
-        <input
+      <SingleInputField
+        label="Position"
+        type="text"
+        value={formData.title}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
+      <SingleInputField
+        label="Company Name"
+        type="text"
+        value={formData.company}
+        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+      />
+      <DescriptionInput
+        value={formData.description}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+          // Auto-resize textarea
+          e.target.style.height = "auto";
+          e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+        }}
+      />
+      <div className="flex flex-row gap-4">
+        <SingleInputField
           type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-      </label>
-      <label className="flex flex-col gap-2 w-full">
-        Company Name
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.company}
+          label="From"
+          value={formData.startDate}
           onChange={(e) =>
-            setFormData({ ...formData, company: e.target.value })
+            setFormData({ ...formData, startDate: e.target.value })
           }
         />
-      </label>
-      <label className="flex flex-col gap-2 w-full">
-        Description
-        <textarea
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
-          value={formData.description}
-          onChange={(e) => {
-            setFormData({ ...formData, description: e.target.value });
-            // Auto-resize textarea
-            e.target.style.height = "auto";
-            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
-          }}
-          onInput={(e) => {
-            // Also handle onInput for better responsiveness
-            const target = e.target as HTMLTextAreaElement;
-            target.style.height = "auto";
-            target.style.height = Math.max(59, target.scrollHeight) + "px";
-          }}
-          style={{ overflowY: "hidden" }}
-          rows={1}
+
+        <SingleInputField
+          label="To"
+          type="text"
+          value={formData.endDate}
+          onChange={(e) =>
+            setFormData({ ...formData, endDate: e.target.value })
+          }
         />
-      </label>
-      <div className="flex flex-row gap-4">
-        <label className="flex flex-col gap-2 w-full">
-          From
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.startDate}
-            onChange={(e) =>
-              setFormData({ ...formData, startDate: e.target.value })
-            }
-          />
-        </label>
-        <label className="flex flex-col gap-2 w-full">
-          To
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.endDate}
-            onChange={(e) =>
-              setFormData({ ...formData, endDate: e.target.value })
-            }
-          />
-        </label>
       </div>
-      <label className="flex flex-col gap-2 w-full">
-        Proof Image
-        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
-          <input
-            type="file"
-            id="work-image-upload"
-            accept="image/*"
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-          <label
-            htmlFor="work-image-upload"
-            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
-          >
-            Choose Image
-          </label>
-        </div>
-      </label>
+      <ProofImageInputField setSelectedImages={setSelectedImages} />
 
       {/* Display existing image (for edit mode) */}
       {formData.proofLink && formData.proofLink.trim() !== "" && (

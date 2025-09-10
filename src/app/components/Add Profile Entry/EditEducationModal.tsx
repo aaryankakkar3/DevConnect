@@ -1,6 +1,8 @@
 import React from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import SingleInputField from "./SingleInputField";
+import ProofImageInputField from "./ProofImageInputField";
 
 export default function EditEducationModal({
   formData,
@@ -60,83 +62,49 @@ export default function EditEducationModal({
           <option value="phd">PhD</option>
         </select>
       </label>
-      <label className="flex flex-col gap-2 w-full">
-        Institution
-        <input
+      <SingleInputField
+        label="Institution"
+        value={formData.institution}
+        type="text"
+        onChange={(e) =>
+          setFormData({ ...formData, institution: e.target.value })
+        }
+      />
+      <div className="flex flex-row gap-4">
+        <SingleInputField
+          label="Score"
+          value={formData.score}
           type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.institution}
+          onChange={(e) => setFormData({ ...formData, score: e.target.value })}
+        />
+        <SingleInputField
+          label="Max Score"
+          value={formData.maxScore}
+          type="text"
           onChange={(e) =>
-            setFormData({ ...formData, institution: e.target.value })
+            setFormData({ ...formData, maxScore: e.target.value })
           }
         />
-      </label>
-      <div className="flex flex-row gap-4">
-        <label className="flex flex-col gap-2 w-full">
-          Score
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.score}
-            onChange={(e) =>
-              setFormData({ ...formData, score: e.target.value })
-            }
-          />
-        </label>
-        <label className="flex flex-col gap-2 w-full">
-          Max Score
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.maxScore}
-            onChange={(e) =>
-              setFormData({ ...formData, maxScore: e.target.value })
-            }
-          />
-        </label>
       </div>
       <div className="flex flex-row gap-4">
-        <label className="flex flex-col gap-2 w-full">
-          From
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.startDate}
-            onChange={(e) =>
-              setFormData({ ...formData, startDate: e.target.value })
-            }
-          />
-        </label>
-        <label className="flex flex-col gap-2 w-full">
-          To
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.endDate}
-            onChange={(e) =>
-              setFormData({ ...formData, endDate: e.target.value })
-            }
-          />
-        </label>
+        <SingleInputField
+          label="From"
+          value={formData.startDate}
+          type="text"
+          onChange={(e) =>
+            setFormData({ ...formData, startDate: e.target.value })
+          }
+        />
+        <SingleInputField
+          label="To"
+          value={formData.endDate}
+          type="text"
+          onChange={(e) =>
+            setFormData({ ...formData, endDate: e.target.value })
+          }
+        />
       </div>
-      <label className="flex flex-col gap-2 w-full">
-        Proof Image
-        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
-          <input
-            type="file"
-            id="education-image-upload"
-            accept="image/*"
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-          <label
-            htmlFor="education-image-upload"
-            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
-          >
-            Choose Image
-          </label>
-        </div>
-      </label>
+      <ProofImageInputField setSelectedImages={setSelectedImages} />
 
       {/* Display existing image (for edit mode) */}
       {formData.proofLink && formData.proofLink.trim() !== "" && (

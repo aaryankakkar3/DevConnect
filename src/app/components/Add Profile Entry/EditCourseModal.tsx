@@ -1,6 +1,8 @@
 import React from "react";
-import { toast } from "sonner";
 import { X } from "lucide-react";
+import SingleInputField from "./SingleInputField";
+import DescriptionInput from "./DescriptionInput";
+import ProofImageInputField from "./ProofImageInputField";
 
 export default function EditCourseModal({
   formData,
@@ -13,28 +15,6 @@ export default function EditCourseModal({
   selectedImages: File[];
   setSelectedImages: (files: File[]) => void;
 }) {
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    const file = files[0]; // Only take the first file
-
-    // Validate file type
-    const isValidType = file.type.startsWith("image/");
-    const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
-
-    if (!isValidType) {
-      toast.error(`${file.name} is not a valid image file`);
-      return;
-    }
-    if (!isValidSize) {
-      toast.error(`${file.name} is too large (max 10MB)`);
-      return;
-    }
-
-    setSelectedImages([file]); // Only one image
-  };
-
   const removeImage = () => {
     setSelectedImages([]);
   };
@@ -45,89 +25,48 @@ export default function EditCourseModal({
 
   return (
     <>
-      <label className="flex flex-col gap-2 w-full">
-        Title
-        <input
+      <SingleInputField
+        label="Title"
+        value={formData.title}
+        type="text"
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
+      <SingleInputField
+        label="Granting Organization"
+        value={formData.issuingOrganization}
+        type="text"
+        onChange={(e) =>
+          setFormData({ ...formData, issuingOrganization: e.target.value })
+        }
+      />
+      <DescriptionInput
+        value={formData.description}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+          // Auto-resize textarea
+          e.target.style.height = "auto";
+          e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+        }}
+      />
+      <div className="flex flex-row gap-4">
+        <SingleInputField
+          label="Start Date"
+          value={formData.startDate}
           type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-      </label>
-      <label className="flex flex-col gap-2 w-full">
-        Granting Organization
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.issuingOrganization}
           onChange={(e) =>
-            setFormData({ ...formData, issuingOrganization: e.target.value })
+            setFormData({ ...formData, startDate: e.target.value })
           }
         />
-      </label>
-      <label className="flex flex-col gap-2 w-full">
-        Description
-        <textarea
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
-          value={formData.description}
-          onChange={(e) => {
-            setFormData({ ...formData, description: e.target.value });
-            // Auto-resize textarea
-            e.target.style.height = "auto";
-            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
-          }}
-          onInput={(e) => {
-            // Also handle onInput for better responsiveness
-            const target = e.target as HTMLTextAreaElement;
-            target.style.height = "auto";
-            target.style.height = Math.max(59, target.scrollHeight) + "px";
-          }}
-          style={{ overflowY: "hidden" }}
-          rows={1}
+        <SingleInputField
+          label="End Date"
+          value={formData.endDate}
+          type="text"
+          onChange={(e) =>
+            setFormData({ ...formData, endDate: e.target.value })
+          }
         />
-      </label>
-      <div className="flex flex-row gap-4">
-        <label className="flex flex-col gap-2 w-full">
-          Start Date
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.startDate}
-            onChange={(e) =>
-              setFormData({ ...formData, startDate: e.target.value })
-            }
-          />
-        </label>
-        <label className="flex flex-col gap-2 w-full">
-          End Date
-          <input
-            type="text"
-            className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-            value={formData.endDate}
-            onChange={(e) =>
-              setFormData({ ...formData, endDate: e.target.value })
-            }
-          />
-        </label>
       </div>
-      <label className="flex flex-col gap-2 w-full">
-        Proof Image
-        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
-          <input
-            type="file"
-            id="course-image-upload"
-            accept="image/*"
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-          <label
-            htmlFor="course-image-upload"
-            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
-          >
-            Choose Image
-          </label>
-        </div>
-      </label>
+      <ProofImageInputField setSelectedImages={setSelectedImages} />
 
       {/* Display existing image (for edit mode) */}
       {formData.proofLink && formData.proofLink.trim() !== "" && (

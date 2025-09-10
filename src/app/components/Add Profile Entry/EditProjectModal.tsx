@@ -1,6 +1,7 @@
 import { SquareMinus, SquarePlus, X } from "lucide-react";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
+import SingleInputField from "./SingleInputField";
+import DescriptionInput from "./DescriptionInput";
 
 interface EditProjectModalProps {
   formData: any;
@@ -97,15 +98,12 @@ function EditProjectModal({
 
   return (
     <>
-      <label className="flex flex-col gap-2 w-full">
-        Project Name
-        <input
-          type="text"
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-      </label>
+      <SingleInputField
+        type="text"
+        label="Project Name"
+        value={formData.title}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
       <label className="flex flex-col gap-2 w-full">
         Images
         <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
@@ -187,56 +185,39 @@ function EditProjectModal({
           </div>
         </div>
       )}
-      <label className="flex flex-col gap-2 w-full">
-        Description
-        <textarea
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
-          value={formData.description}
-          onChange={(e) => {
-            setFormData({ ...formData, description: e.target.value });
-            // Auto-resize textarea
-            e.target.style.height = "auto";
-            e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
-          }}
-          onInput={(e) => {
-            // Also handle onInput for better responsiveness
-            const target = e.target as HTMLTextAreaElement;
-            target.style.height = "auto";
-            target.style.height = Math.max(59, target.scrollHeight) + "px";
-          }}
-          style={{ overflowY: "hidden" }}
-          rows={1}
-        />
-      </label>
+      <DescriptionInput
+        value={formData.description}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+          // Auto-resize textarea
+          e.target.style.height = "auto";
+          e.target.style.height = Math.max(59, e.target.scrollHeight) + "px";
+        }}
+      />
       <div className="flex flex-col gap-2">
         {linkInputs.map((linkInput: any, index: number) => (
           <div key={linkInput.id} className="flex flex-row gap-4 items-end">
-            <label className="flex flex-col gap-2 w-full">
-              Proof Link
-              <input
-                type="text"
-                className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-                value={formData.links[index] || ""}
-                onChange={(e) => {
-                  const newLinks = [...formData.links];
-                  newLinks[index] = e.target.value;
-                  setFormData({ ...formData, links: newLinks });
-                }}
-              />
-            </label>
-            <label className="flex flex-col gap-2 w-full">
-              Link Label
-              <input
-                type="text"
-                className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
-                value={formData.linkLabels[index] || ""}
-                onChange={(e) => {
-                  const newLinkLabels = [...formData.linkLabels];
-                  newLinkLabels[index] = e.target.value;
-                  setFormData({ ...formData, linkLabels: newLinkLabels });
-                }}
-              />
-            </label>
+            <SingleInputField
+              label="Proof Link"
+              type="text"
+              value={formData.links[index] || ""}
+              onChange={(e) => {
+                const newLinks = [...formData.links];
+                newLinks[index] = e.target.value;
+                setFormData({ ...formData, links: newLinks });
+              }}
+            />
+
+            <SingleInputField
+              label="Link Label"
+              type="text"
+              value={formData.linkLabels[index] || ""}
+              onChange={(e) => {
+                const newLinkLabels = [...formData.linkLabels];
+                newLinkLabels[index] = e.target.value;
+                setFormData({ ...formData, linkLabels: newLinkLabels });
+              }}
+            />
             <div className="flex h-[51px] w-fit justify-center items-center">
               <button
                 type="button"
