@@ -4,6 +4,7 @@ import EditProjectModal from "./EditProjectModal";
 import EditWorkModal from "./EditWorkModal";
 import EditEducationModal from "./EditEducationModal";
 import EditCourseModal from "./EditCourseModal";
+import { uploadImages, uploadSingleImage } from "@/lib/uploadImage";
 
 // Reusable image handling functions
 const handleMultipleImageSelect = (
@@ -111,37 +112,6 @@ function AddProfileEntryModal({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Helper function to upload images to Cloudinary
-  const uploadImages = async (files: File[]): Promise<string[]> => {
-    if (files.length === 0) return [];
-
-    const imageUploadPromises = files.map(async (file) => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error("Failed to read file"));
-        reader.readAsDataURL(file);
-      });
-    });
-
-    const base64Images = await Promise.all(imageUploadPromises);
-
-    const response = await fetch("/api/upload/images", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ images: base64Images }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload images");
-    }
-
-    const result = await response.json();
-    return result.urls;
-  };
-
   const handleSubmit = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     console.log("Frontend Form Data", formData);
@@ -158,7 +128,15 @@ function AddProfileEntryModal({
       // Upload new images if any are selected
       if (selectedImages.length > 0) {
         toast.loading("Uploading images...", { id: loadingToast });
-        uploadedImageUrls = await uploadImages(selectedImages);
+
+        if (type === "Projects") {
+          // Projects can have multiple images
+          uploadedImageUrls = await uploadImages(selectedImages);
+        } else {
+          // Other types (Work, Education, Courses) only support single image
+          const singleImageUrl = await uploadSingleImage(selectedImages[0]);
+          uploadedImageUrls = [singleImageUrl];
+        }
       }
 
       // Prepare data based on form type
