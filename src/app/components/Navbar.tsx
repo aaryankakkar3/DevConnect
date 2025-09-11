@@ -28,7 +28,7 @@ function NavItem({ icon, label }: { icon: string; label: string }) {
   const IconComponent = iconMap[icon];
 
   return (
-    <button className="flex flex-row gap-1 justify-center items-center hover:text-bgdark hover:font-semibold">
+    <button className="flex flex-row gap-1 justify-center items-center hover:font-semibold">
       <IconComponent size={16} strokeWidth={1.5} />
       {label}
     </button>
@@ -38,23 +38,22 @@ function NavItem({ icon, label }: { icon: string; label: string }) {
 function Navbar() {
   const bidCount = 15;
   return (
-    <div className="flex flex-row justify-between">
-      <div className="text-l font-black">
+    <div className="flex flex-row justify-between items-center">
+      <div className="text-3xl font-semibold">
         <span className="text-accent">Dev</span> Connect
       </div>
-      <div className="bg-white rounded-full text-muted py-5 pl-16 pr-5 flex flex-row gap-6">
+      <div className="rounded-full text-text1 flex flex-row gap-6">
         <NavItem icon="Globe" label="Feed" />
-        <button className="flex flex-row gap-1 justify-center items-center hover:text-bgdark hover:font-semibold">
-          <div className="text-bgdark">{bidCount}</div>
-          Bids
+        <button className="flex flex-row gap-1 justify-center items-center hover:font-semibold">
+          {bidCount} Bids
         </button>
         <NavItem icon="Search" label="Search devs" />
         <NavItem icon="HelpCircle" label="Help" />
         <button>
-          <div className="rounded-full w-6 h-6 border-1 border-muted"></div>
+          <div className="rounded-full w-6 h-6 border-1 border-text2"></div>
         </button>
         <button
-          className="hover:text-bgdark cursor-pointer"
+          className="hover:font-semibold cursor-pointer"
           onClick={() => {
             handleLogout();
           }}

@@ -3,13 +3,12 @@
 
 :root {
   /* Background colors */
-  --bgdark: #0d0d0d;
-  --bglight: #262626;
-  --white: #ffffff;
-  --muted: #404040;
-  --muted2: #cccccc;
-  --accent: #7adaac;
-  --softaccent: #b7ebd1;
+  --bg1: #ffffff;
+  --bg2: #e6e6e6;
+  --text1: #1e1d25;
+  --text2: #9ea4a9;
+  --accent: #6a4dff;
+  --accent2: #ccccff;
 
   /* Font sizes */
   --font-xl: 6rem; /* 96px */
@@ -22,25 +21,21 @@
 
 @theme inline {
   /* Background colors */
-  --color-bgdark: var(--bgdark);
-  --color-bglight: var(--bglight);
-  --color-white: var(--white);
-  --color-muted: var(--muted);
+  --color-bg1: var(--bg1);
+  --color-bg2: var(--bg2);
+  --color-text1: var(--text1);
+  --color-text2: var(--text2);
   --color-accent: var(--accent);
-  --color-softaccent: var(--softaccent);
-  --color-muted2: var(--muted2);
+  --color-accent2: var(--accent2);
 
   /* Font sizes */
-  --text-xl: var(--font-xl);
-  --text-l: var(--font-l);
-  --text-s: var(--font-s);
 
   /* Font families */
   --font-family-body: "Nunito", sans-serif;
 }
 
 body {
-  background: var(--bgdark);
-  color: var(--color-white);
+  background: var(--bg1);
+  color: var(--color-text1);
   font-family: var(--font-family-body);
 }

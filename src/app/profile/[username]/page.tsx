@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import ProfileSection from "../../components/ProfileSection";
+import ProfileSection from "../../components/Profile/ProfileSection";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
-import EditProfileModal from "@/app/components/EditProfileModal";
+import EditProfileModal from "@/app/components/Profile/Edit Profile Modals/EditProfileModal";
+import ProfileAccountNav from "@/app/components/ProfileAccountNav";
 
 function Profile({ params }: { params: Promise<{ username: string }> }) {
   // State for storing fetched data - separate arrays for each type
@@ -165,7 +166,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
       <div className="p-10 flex flex-col gap-10">
         <Navbar />
         <div className="flex justify-center items-center h-96">
-          <p className="text-muted">Loading profile data...</p>
+          <p className="text-text2">Loading profile data...</p>
         </div>
       </div>
     );
@@ -189,7 +190,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
       <div className="p-10 flex flex-col gap-10">
         <Navbar />
         <div className="flex justify-center items-center h-96">
-          <p className="text-muted">Profile not found</p>
+          <p className="text-text2">Profile not found</p>
         </div>
       </div>
     );
@@ -211,19 +212,12 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   const isThisADevProfile = profileData.clearance === "dev";
 
   return (
-    <div className="p-10 flex flex-col gap-10">
+    <div className="p-5 flex flex-col gap-10">
       <Navbar />
       <div className="flex flex-col gap-10 items-center">
-        <div className="flex flex-row gap-3 bg-bglight text-s w-fit h-fit rounded-full">
-          <button className="px-20 py-10 rounded-full bg-accent text-bgdark font-semibold">
-            Personal Profile
-          </button>
-          <button className="px-20 py-10 rounded-full hover:bg-accent hover:text-bgdark hover:font-semibold">
-            Account Settings
-          </button>
-        </div>
+        {isOwner && <ProfileAccountNav currentPage="Personal Profile" />}
         <div className="flex flex-row gap-10 w-full h-fit">
-          <div className="w-75 h-75 bg-muted rounded-full shrink-0 overflow-hidden">
+          <div className="w-75 h-75 bg-text2 rounded-full shrink-0 overflow-hidden">
             {profileData.profilePicture ? (
               <img
                 src={profileData.profilePicture}
@@ -231,17 +225,17 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-muted"></div>
+              <div className="w-full h-full bg-text2"></div>
             )}
           </div>
           <div className="flex flex-col gap-5 w-full justify-center">
-            <div className="flex flex-row gap-5 text-l justify-start items-start">
+            <div className="flex flex-row gap-5 text-xl justify-start items-start">
               <p className="">{profileData.name || profileData.username}</p>
-              <p className="text-muted">
+              <p className="text-text2">
                 {profileData.clearance === "dev" ? "Developer" : "Client"}
               </p>
             </div>
-            <p className="text-muted2">
+            <p className="text-text2">
               {[
                 profileData.dob && formatDate(profileData.dob),
                 console.log("DOB:", formatDate(profileData.dob)),
@@ -264,7 +258,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
                 onClick={() => {
                   setProfileModalOpen(true);
                 }}
-                className="w-fit text-muted2 hover:text-white hover:underline cursor-pointer"
+                className="w-fit text-text2 hover:text-text1 hover:underline cursor-pointer"
               >
                 Edit Profile
               </button>

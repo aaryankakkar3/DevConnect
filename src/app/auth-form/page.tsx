@@ -32,10 +32,10 @@ function FormInput({
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
-    <label className={`flex flex-col w-full text-s gap-2 ${className}`}>
+    <label className={`flex flex-col w-full text-base gap-2 ${className}`}>
       {label}
       <div
-        className={`bg-bglight px-5 py-5 rounded-xl flex flex-row justify-between
+        className={`bg-bg2 px-5 py-5 rounded-xl flex flex-row justify-between
         }`}
       >
         <input
@@ -81,7 +81,7 @@ function AuthForm() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const activeFormType = "text-bgdark bg-accent font-semibold";
+  const activeFormType = "text-bg1 bg-accent font-semibold";
 
   const clearFormData = () => {
     setFormData({
@@ -279,8 +279,8 @@ function AuthForm() {
   return (
     <div className="flex flex-row h-screen w-screen">
       <div className="w-[55%] flex flex-col justify-center items-start gap-6 p-6 ">
-        <h1 className="text-xl">{isLogin ? "Login" : "Sign Up"}</h1>
-        <p className="text-s  w-75">
+        <h1 className="text-2xl">{isLogin ? "Login" : "Sign Up"}</h1>
+        <p className="text-base  w-75">
           {isLogin
             ? "Login to pick up right where you left off."
             : "Sign up to hire talent or find work. Get started in just a few minutes."}
@@ -300,13 +300,13 @@ function AuthForm() {
           className="w-112.5 h-fit gap-6 flex flex-col items-center justify-center"
         >
           <div
-            className={`w-fit h-fit bg-bglight rounded-full flex flex-row gap-3 ${
+            className={`w-fit h-fit bg-bg2 rounded-full flex flex-row gap-3 ${
               isSigningUpFurther ? "hidden" : ""
             }`}
           >
             <button
               type="button"
-              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bgdark ${
+              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bg1 ${
                 isClient ? activeFormType : ""
               }`}
               onClick={() => setIsClient(true)}
@@ -315,7 +315,7 @@ function AuthForm() {
             </button>
             <button
               type="button"
-              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bgdark ${
+              className={`px-20 py-5 rounded-full cursor-pointer hover:bg-accent hover:font-semibold hover:text-bg1 ${
                 !isClient ? activeFormType : ""
               }`}
               onClick={() => setIsClient(false)}
@@ -386,7 +386,7 @@ function AuthForm() {
           <div className="w-full flex flex-row justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-accent rounded-xl text-bgdark font-semibold cursor-pointer hover:opacity-50"
+              className="px-6 py-3 bg-accent rounded-xl text-bg1 font-semibold cursor-pointer hover:opacity-50"
             >
               {isLogin ? "Login" : "Submit"}
             </button>

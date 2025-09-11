@@ -76,9 +76,9 @@ function PortfolioProjectCard({
   };
 
   return (
-    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
+    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bg2">
       <div
-        className="relative w-full aspect-video overflow-hidden bg-bglight"
+        className="relative w-full aspect-video overflow-hidden bg-bg2"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -93,10 +93,10 @@ function PortfolioProjectCard({
             />
 
             {imageLoadError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-bglight text-muted text-center p-4">
+              <div className="absolute inset-0 flex items-center justify-center bg-bg2 text-text2 text-center p-4">
                 <div>
                   <div className="text-sm">Image failed to load</div>
-                  <div className="text-xs text-muted2 mt-1 break-all">
+                  <div className="text-xs text-text2 mt-1 break-all">
                     {validImages[currentImageIndex]}
                   </div>
                 </div>
@@ -104,7 +104,7 @@ function PortfolioProjectCard({
             )}
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-bglight text-muted">
+          <div className="w-full h-full flex items-center justify-center bg-bg2 text-text2">
             No image available
           </div>
         )}
@@ -114,13 +114,13 @@ function PortfolioProjectCard({
           <>
             <button
               onClick={goToPrevious}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-bglight hover:bg-bgdark bg-opacity-50 text-white p-1 rounded-full"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-bg2 hover:bg-bg1 bg-opacity-50 text-text1 p-1 rounded-full"
             >
               <ChevronLeft size={20} />
             </button>
             <button
               onClick={goToNext}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-bglight hover:bg-bgdark bg-opacity-50 text-white p-1 rounded-full"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-bg2 hover:bg-bg1 bg-opacity-50 text-text1 p-1 rounded-full"
             >
               <ChevronRight size={20} />
             </button>
@@ -135,8 +135,8 @@ function PortfolioProjectCard({
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-200 ${
                   index === currentImageIndex
-                    ? "bg-white bg-opacity-80"
-                    : "bg-white bg-opacity-40"
+                    ? "bg-text1 bg-opacity-80"
+                    : "bg-text1 bg-opacity-40"
                 }`}
               />
             ))}
@@ -146,7 +146,7 @@ function PortfolioProjectCard({
       <div className="text-accent">{title}</div>
       <div className="">{description}</div>
       <div className="flex flex-row justify-between items-end">
-        <div className="text-softaccent">
+        <div className="text-accent2">
           {links.map((link, index) => (
             <React.Fragment key={index}>
               <a
@@ -164,7 +164,7 @@ function PortfolioProjectCard({
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="text-muted2 hover:text-white cursor-pointer text-left"
+            className="text-text2 hover:text-text1 cursor-pointer text-left"
           >
             Edit
           </button>

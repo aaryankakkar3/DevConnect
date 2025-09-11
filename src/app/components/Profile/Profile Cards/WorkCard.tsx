@@ -32,18 +32,18 @@ function WorkCard({
   };
 
   return (
-    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bglight">
+    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bg2">
       <div className="text-accent ">
         {title}
         <br />@{company}
       </div>
       <div className="">{description}</div>
-      <div className="text-muted2">
+      <div className="text-text2">
         From {startDate} to {endDate}.
       </div>
       <div className="flex justify-between">
         <a
-          className="text-softaccent"
+          className="text-accent2"
           href={proofLink}
           target="_blank"
           rel="noopener noreferrer"
@@ -53,7 +53,7 @@ function WorkCard({
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="text-text-muted hover:text-white cursor-pointer text-left"
+            className="text-text-text2 hover:text-text1 cursor-pointer text-left"
           >
             Edit
           </button>

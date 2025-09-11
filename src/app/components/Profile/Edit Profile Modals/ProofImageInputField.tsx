@@ -30,7 +30,7 @@ function ProofImageInputField({
   return (
     <label className="flex flex-col gap-2 w-full">
       Proof Image
-      <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+      <div className="py-[15px] px-8 bg-bg2 focus:outline-none focus:ring-0 flex justify-end">
         <input
           type="file"
           id="course-image-upload"
@@ -40,7 +40,7 @@ function ProofImageInputField({
         />
         <label
           htmlFor="course-image-upload"
-          className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+          className="px-[2px] py-[1px] border border-text2 w-fit cursor-pointer hover:bg-text2 hover:text-bg1 transition-colors"
         >
           Choose Image
         </label>

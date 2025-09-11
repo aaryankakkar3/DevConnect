@@ -50,7 +50,7 @@ export default function EditEducationModal({
       <label className="flex flex-col gap-2 w-full">
         Degree
         <select
-          className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+          className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0"
           value={formData.degree}
           onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
         >
@@ -111,14 +111,14 @@ export default function EditEducationModal({
         <div className="flex flex-col gap-2 w-full">
           <span className="">Existing Image:</span>
           <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
-              <span className="text-s truncate max-w-40">
+            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
+              <span className="text-base truncate max-w-40">
                 {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
               </span>
               <button
                 type="button"
                 onClick={() => removeExistingImage()}
-                className="text-muted2 hover:text-white cursor-pointer"
+                className="text-text2 hover:text-text1 cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -132,14 +132,14 @@ export default function EditEducationModal({
         <div className="flex flex-col gap-2 w-full">
           <span className="">New Image to Upload:</span>
           <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bglight p-2 rounded">
-              <span className="text-s truncate max-w-40">
+            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
+              <span className="text-base truncate max-w-40">
                 {selectedImages[0].name}
               </span>
               <button
                 type="button"
                 onClick={() => removeImage()}
-                className="text-muted2 hover:text-white cursor-pointer"
+                className="text-text2 hover:text-text1 cursor-pointer"
               >
                 <X size={16} />
               </button>

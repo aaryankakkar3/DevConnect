@@ -11,7 +11,7 @@ function DescriptionInput({
     <label className="flex flex-col gap-2 w-full">
       Description
       <textarea
-        className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
+        className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0 resize-none min-h-[59px]"
         value={value}
         onChange={onChange}
         onInput={(e) => {

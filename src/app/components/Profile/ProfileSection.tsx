@@ -7,7 +7,7 @@ import EducationCard from "./Profile Cards/EducationCard";
 import CertificationCard from "./Profile Cards/CertificationCard";
 import ReviewCard from "./Profile Cards/ReviewCard";
 import { CirclePlus } from "lucide-react";
-import AddProfileEntryModal from "./Add Profile Entry/AddProfileEntryModal";
+import AddProfileEntryModal from "./Edit Profile Modals/AddProfileEntryModal";
 
 function ProfileSection({
   type,
@@ -37,7 +37,7 @@ function ProfileSection({
 
   return (
     <div className="flex flex-col gap-5 justify-start items-start w-full">
-      <div className="text-l w-fit">{type}</div>
+      <div className="text-xl w-fit">{type}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-5">
         {type === "Projects" &&
           safeData.map((card) => (
@@ -106,9 +106,9 @@ function ProfileSection({
             />
           ))}
         {type != "Reviews" && isOwner && (
-          <div className="w-full h-full min-h-50 border-2 border-dashed border-bglight flex justify-center items-center">
+          <div className="w-full h-full min-h-50 border-2 border-dashed border-bg2 flex justify-center items-center">
             <CirclePlus
-              className="w-15 h-15 text-bglight hover:text-muted"
+              className="w-15 h-15 text-bg2 hover:text-text2"
               strokeWidth={1}
               onClick={handleAdd}
             />

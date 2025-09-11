@@ -106,7 +106,7 @@ function EditProjectModal({
       />
       <label className="flex flex-col gap-2 w-full">
         Images
-        <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+        <div className="py-[15px] px-8 bg-bg2 focus:outline-none focus:ring-0 flex justify-end">
           <input
             type="file"
             id="image-upload"
@@ -119,7 +119,7 @@ function EditProjectModal({
           />
           <label
             htmlFor="image-upload"
-            className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+            className="px-[2px] py-[1px] border border-text2 w-fit cursor-pointer hover:bg-text2 hover:text-bg1 transition-colors"
           >
             Choose Images
           </label>
@@ -136,9 +136,9 @@ function EditProjectModal({
               {formData.images.map((imageUrl: string, index: number) => (
                 <div
                   key={`existing-${index}`}
-                  className="flex items-center gap-2 bg-bglight p-2 rounded"
+                  className="flex items-center gap-2 bg-bg2 p-2 rounded"
                 >
-                  <span className="text-s truncate max-w-40">
+                  <span className="text-base truncate max-w-40">
                     {imageUrl.split("/").pop()?.split("?")[0] || "Image"}
                   </span>
                   <button
@@ -146,7 +146,7 @@ function EditProjectModal({
                     onClick={() =>
                       removeExistingMultipleImage(index, formData, setFormData)
                     }
-                    className="text-muted2 hover:text-white cursor-pointer"
+                    className="text-text2 hover:text-text1 cursor-pointer"
                   >
                     <X size={16} />
                   </button>
@@ -164,9 +164,9 @@ function EditProjectModal({
             {selectedImages.map((file, index) => (
               <div
                 key={`new-${index}`}
-                className="flex items-center gap-2 bg-bglight p-2 rounded"
+                className="flex items-center gap-2 bg-bg2 p-2 rounded"
               >
-                <span className="text-s truncate max-w-40">{file.name}</span>
+                <span className="text-base truncate max-w-40">{file.name}</span>
                 <button
                   type="button"
                   onClick={() =>
@@ -176,7 +176,7 @@ function EditProjectModal({
                       setSelectedImages
                     )
                   }
-                  className="text-muted2 hover:text-white cursor-pointer"
+                  className="text-text2 hover:text-text1 cursor-pointer"
                 >
                   <X size={16} />
                 </button>
@@ -222,7 +222,7 @@ function EditProjectModal({
               <button
                 type="button"
                 onClick={() => removeLinkInput(index)}
-                className="text-[28px] text-muted2 hover:text-white cursor-pointer"
+                className="text-[28px] text-text2 hover:text-text1 cursor-pointer"
                 disabled={linkInputs.length === 1}
               >
                 x
@@ -234,13 +234,13 @@ function EditProjectModal({
           {linkInputs.length > 1 && (
             <SquareMinus
               strokeWidth={1}
-              className="w-9 h-9 text-muted hover:text-white cursor-pointer"
+              className="w-9 h-9 text-text2 hover:text-text1 cursor-pointer"
               onClick={removeLastLinkInput}
             />
           )}
           <SquarePlus
             strokeWidth={1}
-            className="w-9 h-9 text-muted hover:text-white cursor-pointer"
+            className="w-9 h-9 text-text2 hover:text-text1 cursor-pointer"
             onClick={addLinkInput}
           />
         </div>

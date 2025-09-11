@@ -389,9 +389,9 @@ function AddProfileEntryModal({
 
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
-      <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 bg-bgdark border border-bglight flex flex-col p-10 gap-8 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-l">
+      <div className="fixed inset-0 bg-bg1 opacity-30 transition-opacity" />
+      <form className="relative z-20 w-175 bg-bg1 border border-bg2 flex flex-col p-10 gap-8 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-xl">
           <span className="text-accent">{isEditMode ? "Edit" : "Add"} </span>
           {type}
         </h2>
@@ -399,7 +399,7 @@ function AddProfileEntryModal({
         <div className="flex flex-row gap-4 justify-end">
           <button
             type="button"
-            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bgdark font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             onClick={handleSubmit}
             disabled={isLoading}
           >
@@ -412,7 +412,7 @@ function AddProfileEntryModal({
               type="button"
               onClick={handleDelete}
               disabled={isLoading}
-              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-white font-semibold hover:opacity-75 disabled:opacity-50"
+              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-text1 font-semibold hover:opacity-75 disabled:opacity-50"
             >
               {isLoading ? "Deleting..." : "Delete"}
             </button>
@@ -420,7 +420,7 @@ function AddProfileEntryModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer px-8 py-4 bg-bglight w-fit text-white font-semibold hover:opacity-75"
+            className="cursor-pointer px-8 py-4 bg-bg2 w-fit text-text1 font-semibold hover:opacity-75"
             disabled={isLoading}
           >
             Cancel

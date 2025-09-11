@@ -101,9 +101,9 @@ function EditProfileModal({
   };
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
-      <div className="fixed inset-0 bg-bgdark opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 max-h-[90vh] overflow-y-auto bg-bgdark border border-bglight flex flex-col p-10 gap-8">
-        <h2 className="text-l">
+      <div className="fixed inset-0 bg-bg1 opacity-30 transition-opacity" />
+      <form className="relative z-20 w-175 max-h-[90vh] overflow-y-auto bg-bg1 border border-bg2 flex flex-col p-10 gap-8">
+        <h2 className="text-xl">
           <span className="text-accent">Edit </span>
           Profile
         </h2>
@@ -111,20 +111,20 @@ function EditProfileModal({
           {/* Content */}
           <label className="flex flex-col gap-2 w-full">
             Name
-            <div className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0">
+            <div className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0">
               {formData.name}
             </div>
           </label>
           <label className="flex flex-col gap-2 w-full">
             Date of Birth
-            <div className="py-4 px-8 h-[51px] bg-bglight focus:outline-none focus:ring-0">
+            <div className="py-4 px-8 h-[51px] bg-bg2 focus:outline-none focus:ring-0">
               {formData.dob ? new Date(formData.dob).toLocaleDateString() : ""}
             </div>
           </label>
 
           <label className="flex flex-col gap-2 w-full">
             Profile Picture
-            <div className="py-[15px] px-8 bg-bglight focus:outline-none focus:ring-0 flex justify-end">
+            <div className="py-[15px] px-8 bg-bg2 focus:outline-none focus:ring-0 flex justify-end">
               <input
                 type="file"
                 id="profile-image-upload"
@@ -134,7 +134,7 @@ function EditProfileModal({
               />
               <label
                 htmlFor="profile-image-upload"
-                className="px-[2px] py-[1px] border border-muted w-fit cursor-pointer hover:bg-muted hover:text-bgdark transition-colors"
+                className="px-[2px] py-[1px] border border-text2 w-fit cursor-pointer hover:bg-text2 hover:text-bg1 transition-colors"
               >
                 Choose Image
               </label>
@@ -146,15 +146,15 @@ function EditProfileModal({
             <div className="flex flex-col gap-2 w-full">
               <span className="">Existing Profile Picture:</span>
               <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-2 bg-bglight p-2 rounded">
-                  <span className="text-s truncate max-w-40">
+                <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
+                  <span className="text-base truncate max-w-40">
                     {formData.profilePicture.split("/").pop()?.split("?")[0] ||
                       "Image"}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeExistingProfileImage()}
-                    className="text-muted2 hover:text-white cursor-pointer"
+                    className="text-text2 hover:text-text1 cursor-pointer"
                   >
                     <X size={16} />
                   </button>
@@ -168,14 +168,14 @@ function EditProfileModal({
             <div className="flex flex-col gap-2 w-full">
               <span className="">New Profile Picture to Upload:</span>
               <div className="flex flex-wrap gap-2">
-                <div className="flex items-center gap-2 bg-bglight p-2 rounded">
-                  <span className="text-s truncate max-w-40">
+                <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
+                  <span className="text-base truncate max-w-40">
                     {selectedProfileImage.name}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeProfileImage()}
-                    className="text-muted2 hover:text-white cursor-pointer"
+                    className="text-text2 hover:text-text1 cursor-pointer"
                   >
                     <X size={16} />
                   </button>
@@ -186,7 +186,7 @@ function EditProfileModal({
           <label className="flex flex-col gap-2 w-full">
             Bio
             <textarea
-              className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0 resize-none min-h-[59px]"
+              className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0 resize-none min-h-[59px]"
               value={formData.bio}
               onChange={(e) => {
                 setFormData({ ...formData, bio: e.target.value });
@@ -210,7 +210,7 @@ function EditProfileModal({
               Skills
               <input
                 type="text"
-                className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+                className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0"
                 value={formData.skills}
                 onChange={(e) =>
                   setFormData({ ...formData, skills: e.target.value })
@@ -222,7 +222,7 @@ function EditProfileModal({
             Location
             <input
               type="text"
-              className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+              className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0"
               value={formData.location}
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
@@ -232,7 +232,7 @@ function EditProfileModal({
           <label className="flex flex-col gap-2 w-full">
             Gender
             <select
-              className="py-4 px-8 bg-bglight focus:outline-none focus:ring-0"
+              className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0"
               value={formData.gender}
               onChange={(e) =>
                 setFormData({ ...formData, gender: e.target.value })
@@ -250,7 +250,7 @@ function EditProfileModal({
             type="button"
             onClick={handleSave}
             disabled={isLoading}
-            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bgdark font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
           >
             {isLoading ? "Saving..." : "Save"}
           </button>
@@ -258,7 +258,7 @@ function EditProfileModal({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-white font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-text1 font-semibold hover:opacity-75 disabled:opacity-50"
           >
             Close
           </button>
