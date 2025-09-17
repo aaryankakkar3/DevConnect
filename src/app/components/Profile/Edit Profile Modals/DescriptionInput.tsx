@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 function DescriptionInput({
   value,
@@ -7,18 +7,29 @@ function DescriptionInput({
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        Math.max(59, textareaRef.current.scrollHeight) + "px";
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [value]);
+
   return (
-    <label className="flex flex-col gap-2 w-full">
+    <label className="flex flex-col gap-1 w-full">
       Description
       <textarea
-        className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0 resize-none min-h-[59px]"
+        ref={textareaRef}
+        className="p-4 bg-bg2 focus:outline-none focus:ring-0 resize-none min-h-[59px]"
         value={value}
         onChange={onChange}
-        onInput={(e) => {
-          const target = e.target as HTMLTextAreaElement;
-          target.style.height = "auto";
-          target.style.height = Math.max(59, target.scrollHeight) + "px";
-        }}
+        onInput={adjustHeight}
         style={{ overflowY: "hidden" }}
         rows={1}
       />

@@ -36,9 +36,9 @@ function ProfileSection({
   };
 
   return (
-    <div className="flex flex-col gap-5 justify-start items-start w-full">
-      <div className="text-xl w-fit">{type}</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-5">
+    <div className="flex flex-col gap-3 justify-start items-start w-full">
+      <div className="text-3xl w-fit">{type}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-3">
         {type === "Projects" &&
           safeData.map((card) => (
             <PortfolioProjectCard

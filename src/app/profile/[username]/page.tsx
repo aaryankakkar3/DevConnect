@@ -216,7 +216,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
       <Navbar />
       <div className="flex flex-col gap-10 items-center">
         {isOwner && <ProfileAccountNav currentPage="Personal Profile" />}
-        <div className="flex flex-row gap-10 w-full h-fit">
+        <div className="flex flex-row gap-10 w-full h-fit px-30 justify-center">
           <div className="w-75 h-75 bg-text2 rounded-full shrink-0 overflow-hidden">
             {profileData.profilePicture ? (
               <img
@@ -228,8 +228,8 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
               <div className="w-full h-full bg-text2"></div>
             )}
           </div>
-          <div className="flex flex-col gap-5 w-full justify-center">
-            <div className="flex flex-row gap-5 text-xl justify-start items-start">
+          <div className="flex flex-col gap-5 w-fit justify-center">
+            <div className="flex flex-row gap-5 text-5xl justify-start items-start">
               <p className="">{profileData.name || profileData.username}</p>
               <p className="text-text2">
                 {profileData.clearance === "dev" ? "Developer" : "Client"}

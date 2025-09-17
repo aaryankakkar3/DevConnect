@@ -32,11 +32,10 @@ function CertificationCard({
   };
 
   return (
-    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bg2">
-      <div className="text-accent">
+    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
+      <div className="text-xl text-center flex flex-col gap-0 font-semibold">
         {title}
-        <br />
-        by {issuingOrganization}
+        <span className="text-base">by {issuingOrganization}</span>
       </div>
       <div className="">{description}</div>
       <div className="text-text2">
@@ -44,7 +43,7 @@ function CertificationCard({
       </div>
       <div className="flex justify-between">
         <a
-          className="text-accent2"
+          className="text-accent hover:underline"
           href={proofUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -54,7 +53,7 @@ function CertificationCard({
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="text-text2 hover:text-text1 cursor-pointer text-left"
+            className="text-text2 hover:text-text1 cursor-pointer text-left hover:underline absolute bottom-2 right-2"
           >
             Edit
           </button>

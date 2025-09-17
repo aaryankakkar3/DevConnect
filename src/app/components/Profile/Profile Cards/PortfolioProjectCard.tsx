@@ -76,7 +76,7 @@ function PortfolioProjectCard({
   };
 
   return (
-    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bg2">
+    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
       <div
         className="relative w-full aspect-video overflow-hidden bg-bg2"
         onMouseEnter={() => setIsHovered(true)}
@@ -143,33 +143,30 @@ function PortfolioProjectCard({
           </div>
         )}
       </div>
-      <div className="text-accent">{title}</div>
+      <div className="font-semibold text-xl text-center">{title}</div>
       <div className="">{description}</div>
-      <div className="flex flex-row justify-between items-end">
-        <div className="text-accent2">
-          {links.map((link, index) => (
-            <React.Fragment key={index}>
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {linkLabels[index]}
-              </a>
-              <br />
-            </React.Fragment>
-          ))}
-        </div>
-        {onEdit && (
-          <button
-            onClick={handleEdit}
-            className="text-text2 hover:text-text1 cursor-pointer text-left"
-          >
-            Edit
-          </button>
-        )}
+      <div className="text-accent flex flex-col gap-0 leading-tight">
+        {links.map((link, index) => (
+          <React.Fragment key={index}>
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {linkLabels[index]}
+            </a>
+          </React.Fragment>
+        ))}
       </div>
+      {onEdit && (
+        <button
+          onClick={handleEdit}
+          className="text-text2 hover:text-text1 cursor-pointer text-left hover:underline absolute bottom-2 right-2"
+        >
+          Edit
+        </button>
+      )}
     </div>
   );
 }

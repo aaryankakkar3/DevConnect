@@ -47,10 +47,10 @@ export default function EditEducationModal({
 
   return (
     <>
-      <label className="flex flex-col gap-2 w-full">
+      <label className="flex flex-col gap-1 w-full">
         Degree
         <select
-          className="py-4 px-8 bg-bg2 focus:outline-none focus:ring-0"
+          className="p-4 bg-bg2 focus:outline-none focus:ring-0"
           value={formData.degree}
           onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
         >

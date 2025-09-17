@@ -35,8 +35,8 @@ function EducationCard({
   };
 
   return (
-    <div className="flex flex-col h-full p-3 gap-3 border-2 border-bg2">
-      <div className="text-accent">
+    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
+      <div className="font-semibold text-xl text-center leading-tight">
         {(() => {
           switch (degree) {
             case "highschool":
@@ -68,7 +68,7 @@ function EducationCard({
       </div>
       <div className="flex justify-between">
         <a
-          className="text-accent2"
+          className="text-accent hover:underline"
           href={proofLink}
           target="_blank"
           rel="noopener noreferrer"
@@ -78,7 +78,7 @@ function EducationCard({
         {onEdit && (
           <button
             onClick={handleEdit}
-            className="text-text2 hover:text-text1 cursor-pointer text-left"
+            className="text-text2 hover:text-text1 cursor-pointer text-left hover:underline absolute bottom-2 right-2"
           >
             Edit
           </button>
