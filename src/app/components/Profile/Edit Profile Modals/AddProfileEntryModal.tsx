@@ -412,7 +412,7 @@ function AddProfileEntryModal({
               type="button"
               onClick={handleDelete}
               disabled={isLoading}
-              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-text1 font-semibold hover:opacity-75 disabled:opacity-50"
+              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             >
               {isLoading ? "Deleting..." : "Delete"}
             </button>
