@@ -4,7 +4,7 @@ import React from "react";
 import ProfileAccountNav from "../components/ProfileAccountNav";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import Navbar from "../components/Navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChangeSettingsModal from "../components/Account/ChangeSettingsModal";
 
 function page() {
@@ -15,7 +15,29 @@ function page() {
     type: undefined,
     isOpen: false,
   });
-  const { currentUser } = useCurrentUser();
+  const { currentUser, refreshUser } = useCurrentUser();
+
+  // Refresh user data when user returns to the page (helpful after email confirmation)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Page became visible, refresh user data
+        refreshUser();
+      }
+    };
+
+    const handleFocus = () => {
+      refreshUser();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [refreshUser]);
   return (
     <div>
       <div className="p-5 flex flex-col gap-5">

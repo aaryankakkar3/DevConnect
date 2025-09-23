@@ -6,9 +6,11 @@ import toast from "react-hot-toast";
 function ChangeSettingsModal({
   type,
   onClose,
+  onSuccess,
 }: {
   type?: "email" | "password";
   onClose: () => void;
+  onSuccess?: () => void;
 }) {
   const [formData, setFormData] = useState({
     newData: "",
