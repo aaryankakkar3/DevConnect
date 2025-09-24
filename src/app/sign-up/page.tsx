@@ -7,9 +7,18 @@ import AuthSingleInput from "../components/Auth/AuthSingleInput";
 import AuthPasswordInput from "../components/Auth/AuthPasswordInput";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { useComponentRouteProtection } from "../hooks/useComponentRouteProtection";
 
 function page({ accountType }: { accountType: string }) {
+  const {
+    user,
+    loading: pageLoading,
+    shouldShowContent,
+  } = useComponentRouteProtection({
+    requireGuest: true,
+    redirectTo: "/",
+  });
   const router = useRouter();
   const [signupFormData, setSignupFormData] = React.useState({
     fullName: "",
@@ -189,6 +198,17 @@ function page({ accountType }: { accountType: string }) {
       setLoading(false);
     }
   };
+
+  // Show blank screen while checking authentication
+  if (pageLoading) {
+    return <div></div>;
+  }
+
+  // Don't show content if user shouldn't see this page
+  if (!shouldShowContent) {
+    return <div></div>;
+  }
+
   return (
     <div className="flex flex-row gap-0 p-6 h-screen">
       <AuthLeftHalf

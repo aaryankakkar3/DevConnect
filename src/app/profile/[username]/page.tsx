@@ -6,8 +6,17 @@ import ProfileSection from "../../components/Profile/ProfileSection";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import EditProfileModal from "@/app/components/Profile/Edit Profile Modals/EditProfileModal";
 import ProfileAccountNav from "@/app/components/ProfileAccountNav";
+import { useComponentRouteProtection } from "@/app/hooks/useComponentRouteProtection";
 
 function Profile({ params }: { params: Promise<{ username: string }> }) {
+  const {
+    user,
+    loading: pageLoading,
+    shouldShowContent,
+  } = useComponentRouteProtection({
+    requireAuth: true,
+    redirectTo: "/login",
+  });
   // State for storing fetched data - separate arrays for each type
   const [profileData, setProfileData] = useState<any>(null);
   const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
@@ -159,6 +168,16 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
 
     fetchProfileData();
   }, [username]); // Removed refreshTrigger dependency
+
+  // Show blank screen while checking authentication
+  if (pageLoading) {
+    return <div></div>;
+  }
+
+  // Don't show content if user shouldn't see this page
+  if (!shouldShowContent) {
+    return <div></div>;
+  }
 
   // Show loading state
   if (loading) {

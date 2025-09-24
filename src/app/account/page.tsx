@@ -6,8 +6,17 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import ChangeSettingsModal from "../components/Account/ChangeSettingsModal";
+import { useComponentRouteProtection } from "../hooks/useComponentRouteProtection";
 
 function page() {
+  const {
+    user,
+    loading: pageLoading,
+    shouldShowContent,
+  } = useComponentRouteProtection({
+    requireAuth: true,
+    redirectTo: "/login",
+  });
   const [modalSettings, setModalSettings] = useState<{
     type: "email" | "password" | undefined;
     isOpen: boolean;
@@ -38,6 +47,17 @@ function page() {
       window.removeEventListener("focus", handleFocus);
     };
   }, [refreshUser]);
+
+  // Show blank screen while checking authentication
+  if (pageLoading) {
+    return <div></div>;
+  }
+
+  // Don't show content if user shouldn't see this page
+  if (!shouldShowContent) {
+    return <div></div>;
+  }
+
   return (
     <div>
       <div className="p-5 flex flex-col gap-5">
