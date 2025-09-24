@@ -21,18 +21,32 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, password, isClient } = body;
+    const { email, principal, password, isClient } = body;
+
+    // Accept either email directly or principal (which should be email for now)
+    const userEmail = email || principal;
 
     // Validate required fields
-    if (!email || !password || typeof isClient !== "boolean") {
+    if (!userEmail || !password || typeof isClient !== "boolean") {
       return NextResponse.json(
         { errorMessage: "Email, password, and user type are required" },
         { status: 400 }
       );
     }
 
+    // For now, validate that principal is an email format (since phone auth not setup)
+    if (principal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(principal)) {
+      return NextResponse.json(
+        {
+          errorMessage:
+            "Please enter a valid email address. Phone number authentication is not yet available.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Validate input using shared validation logic
-    const validation = validateLoginForm({ email, password });
+    const validation = validateLoginForm({ email: userEmail, password });
 
     if (!validation.isValid) {
       return NextResponse.json(
@@ -43,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Authenticate with Supabase
     const { data: authData, error } = await client.auth.signInWithPassword({
-      email,
+      email: userEmail,
       password,
     });
 
@@ -51,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database to check clearance
     const dbUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: userEmail },
       select: { clearance: true },
     });
 

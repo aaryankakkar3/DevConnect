@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       fullName,
       contactNumber,
       confirmPassword,
-      isClient,
+      username,
+      authAccountType,
     } = body;
 
     // Validate all required fields are present
@@ -37,7 +38,8 @@ export async function POST(request: NextRequest) {
       !fullName ||
       !contactNumber ||
       !confirmPassword ||
-      typeof isClient !== "boolean"
+      !username ||
+      !authAccountType
     ) {
       return NextResponse.json(
         { errorMessage: "All fields are required" },
@@ -45,11 +47,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate account type
+    if (!["client", "developer"].includes(authAccountType)) {
+      return NextResponse.json(
+        { errorMessage: "Invalid account type" },
+        { status: 400 }
+      );
+    }
+
     let clearance: Clearance;
-    if (isClient) {
+    if (authAccountType === "client") {
       clearance = Clearance.client;
     } else {
       clearance = Clearance.dev;
+    }
+
+    // Check if username already exists
+    const existingUsernameUser = await prisma.user.findUnique({
+      where: { username: username.toLowerCase().trim() },
+      select: { id: true },
+    });
+
+    if (existingUsernameUser) {
+      return NextResponse.json(
+        {
+          errorMessage:
+            "This username is already taken. Please choose another one.",
+        },
+        { status: 400 }
+      );
     }
 
     // Validate form data using shared validation logic
@@ -85,7 +111,7 @@ export async function POST(request: NextRequest) {
         name: fullName,
         contactNumber,
         clearance: clearance,
-        username: "client",
+        username: username.toLowerCase().trim(),
       },
     });
 
