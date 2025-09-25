@@ -8,12 +8,8 @@ function page() {
   const router = useRouter();
 
   return (
-    <div>
+    <div className="p-6">
       <Navbar />
-      <div style={{ padding: "20px", color: "white" }}>
-        <h1>DevConnect</h1>
-        <p>Welcome to your developer network</p>
-      </div>
     </div>
   );
 }

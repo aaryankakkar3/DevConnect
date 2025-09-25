@@ -67,16 +67,20 @@ function NavItem({
 
       {/* Dropdown Menu */}
       {dropdownItems && isHovered && (
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-bg1 border border-text2 rounded-xl shadow-lg z-50 min-w-40">
-          {dropdownItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={item.onClick}
-              className="block w-full text-left px-4 py-3 hover:bg-bg2 first:rounded-t-xl last:rounded-b-xl transition-colors"
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute top-full left-0 z-50">
+          {/* Invisible bridge to prevent hover gap */}
+          <div className="h-1 w-full"></div>
+          <div className="bg-bg1 w-fit flex flex-col gap-1">
+            {dropdownItems.map((item, index) => (
+              <button
+                key={index}
+                onClick={item.onClick}
+                className="block w-full text-left pr-2 py-1 hover:underline first:rounded-t-xl last:rounded-b-xl transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -86,30 +90,69 @@ function NavItem({
 function Navbar() {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
-  console.log("Current User in Navbar:", currentUser);
-  const clearance = currentUser?.clearance;
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const bidCount = 15;
-  const projectCount = 15;
+  const projectCount = 5;
+
+  const bidsDropdown = [
+    { label: "My bids", onClick: () => router.push("/my-bids") },
+    { label: "Buy bid tokens", onClick: () => router.push("/buy-bid-tokens") },
+  ];
+
+  const userDropdown = [
+    {
+      label: "Profile",
+      onClick: () => router.push(`/profile/${currentUser?.username}`),
+    },
+    { label: "Account", onClick: () => router.push("/account") },
+    { label: "Logout", onClick: handleLogout },
+  ];
+
+  const projectsDropdown = [
+    { label: "My Projects", onClick: () => router.push("/my-projects") },
+    {
+      label: "Buy Project Tokens",
+      onClick: () => router.push("/buy-project-tokens"),
+    },
+    { label: "Create Project", onClick: () => router.push("/create-project") },
+  ];
+
   return (
     <div className="flex flex-row justify-between items-center">
       <div className="text-5xl ">
         <span className="text-accent">Dev</span> Connect
       </div>
       <div className="rounded-full text-text1 flex flex-row gap-6">
-        <NavItem icon="Globe" label="Browse" />
-        <NavItem label={`(${bidCount}) bids`} />
+        {currentUser?.clearance == "dev" && (
+          <NavItem icon="Globe" label="Browse" />
+        )}
+        {currentUser?.clearance == "dev" && (
+          <NavItem
+            label={`(${bidCount}) Bids`}
+            dropdownItems={bidsDropdown}
+            isHovered={hoveredItem === "bids"}
+            onMouseEnter={() => setHoveredItem("bids")}
+            onMouseLeave={() => setHoveredItem(null)}
+          />
+        )}
+        {currentUser?.clearance == "client" && (
+          <NavItem
+            label={`(${projectCount}) Projects`}
+            dropdownItems={projectsDropdown}
+            isHovered={hoveredItem === "projects"}
+            onMouseEnter={() => setHoveredItem("projects")}
+            onMouseLeave={() => setHoveredItem(null)}
+          />
+        )}
+
         <NavItem icon="Search" label="Search devs" />
-        <button className="flex flex-row gap-1 hover:font-semibold">
-          {currentUser?.username}
-        </button>
-        {/* <button
-          className="hover:font-semibold cursor-pointer"
-          onClick={() => {
-            handleLogout();
-          }}
-        >
-          Logout
-        </button> */}
+        <NavItem
+          label={currentUser?.username || "User"}
+          dropdownItems={userDropdown}
+          isHovered={hoveredItem === "user"}
+          onMouseEnter={() => setHoveredItem("user")}
+          onMouseLeave={() => setHoveredItem(null)}
+        />
       </div>
     </div>
   );
