@@ -33,9 +33,13 @@ export function useCurrentUser() {
       });
 
       if (!response.ok) {
-        // Handle authentication errors gracefully
-        if (response.status === 401 || response.status === 403) {
-          // User is not authenticated - this is expected, not an error
+        // Handle authentication and user not found errors gracefully
+        if (
+          response.status === 401 ||
+          response.status === 403 ||
+          response.status === 404
+        ) {
+          // User is not authenticated or not found in database - this is expected, not an error
           setCurrentUser(null);
           setError(null);
           return;

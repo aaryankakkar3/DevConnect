@@ -14,7 +14,7 @@ const SingleInputField = ({
       {label}
       <input
         type={type}
-        className="p-4 bg-bg2 focus:outline-none focus:ring-0"
+        className="p-5 border border-text2 rounded-xl"
         value={value}
         onChange={onChange}
       />

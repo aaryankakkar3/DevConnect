@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 import SingleInputField from "./SingleInputField";
 import DescriptionInput from "./DescriptionInput";
 import ProofImageInputField from "./ProofImageInputField";
+import ExistingImageComponent from "./ExistingImageComponent";
+import NewImageComponent from "./NewImageComponent";
 
 export default function EditWorkModal({
   formData,
@@ -92,44 +94,18 @@ export default function EditWorkModal({
 
       {/* Display existing image (for edit mode) */}
       {formData.proofLink && formData.proofLink.trim() !== "" && (
-        <div className="flex flex-col gap-2 w-full">
-          <span className="">Existing Image:</span>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
-              <span className="text-base truncate max-w-40">
-                {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeExistingImage()}
-                className="text-text2 hover:text-text1 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExistingImageComponent
+          proofLink={formData.proofLink}
+          removeExistingImage={removeExistingImage}
+        />
       )}
 
       {/* Display selected new image */}
       {selectedImages.length > 0 && (
-        <div className="flex flex-col gap-2 w-full">
-          <span className="">New Image to Upload:</span>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
-              <span className="text-base truncate max-w-40">
-                {selectedImages[0].name}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeImage()}
-                className="text-text2 hover:text-text1 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <NewImageComponent
+          selectedImages={selectedImages}
+          removeImage={removeImage}
+        />
       )}
     </>
   );

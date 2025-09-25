@@ -125,7 +125,7 @@ function page({ accountType }: { accountType: string }) {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="px-6 py-3 bg-accent text-bg1 w-fit h-fit rounded-xl hover:opacity-70 ml-auto disabled:opacity-50"
+            className="px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl hover:opacity-70 ml-auto disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Submit"}
           </button>

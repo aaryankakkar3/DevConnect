@@ -106,7 +106,7 @@ function EditProjectModal({
       />
       <label className="flex flex-col gap-2 w-full">
         Images
-        <div className="py-[15px] px-8 bg-bg2 focus:outline-none focus:ring-0 flex justify-end">
+        <div className="p-5 bg-bg1 border border-text2 rounded-xl flex justify-end">
           <input
             type="file"
             id="image-upload"
@@ -119,7 +119,7 @@ function EditProjectModal({
           />
           <label
             htmlFor="image-upload"
-            className="px-[2px] py-[1px] border border-text2 w-fit cursor-pointer hover:bg-text2 hover:text-bg1 transition-colors"
+            className="px-2 py-1 rounded-xl border border-text2 w-fit cursor-pointer hover:bg-bg2"
           >
             Choose Images
           </label>
@@ -130,13 +130,13 @@ function EditProjectModal({
       {formData.images &&
         formData.images.length > 0 &&
         formData.images[0] !== "" && (
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-1 w-full">
             <span className="">Existing Images:</span>
             <div className="flex flex-wrap gap-2">
               {formData.images.map((imageUrl: string, index: number) => (
                 <div
                   key={`existing-${index}`}
-                  className="flex items-center gap-2 bg-bg2 p-2 rounded"
+                  className="flex items-center gap-2 bg-bg2 p-2 rounded-xl"
                 >
                   <span className="text-base truncate max-w-40">
                     {imageUrl.split("/").pop()?.split("?")[0] || "Image"}

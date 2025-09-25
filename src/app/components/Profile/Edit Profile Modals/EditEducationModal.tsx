@@ -1,8 +1,10 @@
 import React from "react";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import SingleInputField from "./SingleInputField";
 import ProofImageInputField from "./ProofImageInputField";
+import NewImageComponent from "./NewImageComponent";
+import ExistingImageComponent from "./ExistingImageComponent";
 
 export default function EditEducationModal({
   formData,
@@ -49,18 +51,25 @@ export default function EditEducationModal({
     <>
       <label className="flex flex-col gap-1 w-full">
         Degree
-        <select
-          className="p-4 bg-bg2 focus:outline-none focus:ring-0"
-          value={formData.degree}
-          onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-        >
-          <option value="">Select Degree</option>
-          <option value="highschool">High School</option>
-          <option value="diploma">Diploma</option>
-          <option value="bachelors">Bachelors</option>
-          <option value="masters">Masters</option>
-          <option value="phd">PhD</option>
-        </select>
+        <div className="relative">
+          <select
+            className="p-5 pr-12 bg-bg1 border border-text2 rounded-xl appearance-none w-full text-text1"
+            value={formData.degree}
+            onChange={(e) =>
+              setFormData({ ...formData, degree: e.target.value })
+            }
+          >
+            <option value="">Select Degree</option>
+            <option value="highschool">High School</option>
+            <option value="diploma">Diploma</option>
+            <option value="bachelors">Bachelors</option>
+            <option value="masters">Masters</option>
+            <option value="phd">PhD</option>
+          </select>
+          <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none">
+            <ChevronDown size={20} className="text-text1" strokeWidth={1.5} />
+          </div>
+        </div>
       </label>
       <SingleInputField
         label="Institution"
@@ -108,44 +117,18 @@ export default function EditEducationModal({
 
       {/* Display existing image (for edit mode) */}
       {formData.proofLink && formData.proofLink.trim() !== "" && (
-        <div className="flex flex-col gap-2 w-full">
-          <span className="">Existing Image:</span>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
-              <span className="text-base truncate max-w-40">
-                {formData.proofLink.split("/").pop()?.split("?")[0] || "Image"}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeExistingImage()}
-                className="text-text2 hover:text-text1 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExistingImageComponent
+          proofLink={formData.proofLink}
+          removeExistingImage={removeExistingImage}
+        />
       )}
 
       {/* Display selected new image */}
       {selectedImages.length > 0 && (
-        <div className="flex flex-col gap-2 w-full">
-          <span className="">New Image to Upload:</span>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center gap-2 bg-bg2 p-2 rounded">
-              <span className="text-base truncate max-w-40">
-                {selectedImages[0].name}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeImage()}
-                className="text-text2 hover:text-text1 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <NewImageComponent
+          selectedImages={selectedImages}
+          removeImage={removeImage}
+        />
       )}
     </>
   );

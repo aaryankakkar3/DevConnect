@@ -118,17 +118,17 @@ function ChangeSettingsModal({
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="fixed inset-0 bg-bg1 opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 bg-bg1 border border-bg2 flex flex-col p-5 gap-5 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-3xl">
+      <form className="relative z-20 w-180 bg-bg1 border border-text2 flex flex-col p-10 gap-4 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-5xl text-center">
           Change{" "}
           <span className="text-accent">
             {type == "email" ? "Email" : "Password"}
           </span>
         </h2>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 w-full cursor-pointer">
             Current {type == "email" ? "Email" : "Password"}
-            <div className="p-4 bg-bg2">
+            <div className="p-5 bg-bg2 rounded-xl">
               {type == "email"
                 ? currentUser?.email
                 : "*************************"}
@@ -154,14 +154,14 @@ function ChangeSettingsModal({
             type={type == "email" ? "text" : "password"}
           />
         </div>
-        <div className="flex flex-row gap-3 justify-end">
+        <div className="flex flex-row gap-4 justify-end">
           <button
             type="button"
             onClick={() => {
               handleSubmit();
             }}
             disabled={loading}
-            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bg1 font-semibold hover:opacity-70 disabled:opacity-50 rounded-xl"
           >
             {loading
               ? "Processing..."
@@ -172,7 +172,7 @@ function ChangeSettingsModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-bg1 font-semibold hover:opacity-70 disabled:opacity-50 rounded-xl"
           >
             Cancel
           </button>

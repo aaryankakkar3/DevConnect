@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import EditProjectModal from "./EditProjectModal";
 import EditWorkModal from "./EditWorkModal";
 import EditEducationModal from "./EditEducationModal";
@@ -390,16 +390,16 @@ function AddProfileEntryModal({
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="fixed inset-0 bg-bg1 opacity-30 transition-opacity" />
-      <form className="relative z-20 w-175 bg-bg1 border border-bg2 flex flex-col p-5 gap-5 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-3xl">
+      <form className="relative z-20 w-180 bg-bg1 border border-text2 flex flex-col p-10 gap-4 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-5xl text-center">
           <span className="text-accent">{isEditMode ? "Edit" : "Add"} </span>
           {type}
         </h2>
-        <div className="flex flex-col gap-3 w-full">{renderModalContent()}</div>
-        <div className="flex flex-row gap-3 justify-end">
+        <div className="flex flex-col gap-4 w-full">{renderModalContent()}</div>
+        <div className="flex flex-row gap-4 justify-end">
           <button
             type="button"
-            className="cursor-pointer px-8 py-4 bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
+            className="cursor-pointer px-6 py-3 rounded-xl bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             onClick={handleSubmit}
             disabled={isLoading}
           >
@@ -412,7 +412,7 @@ function AddProfileEntryModal({
               type="button"
               onClick={handleDelete}
               disabled={isLoading}
-              className="cursor-pointer px-8 py-4 bg-[#C32222] w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
+              className="cursor-pointer px-6 py-3 rounded-xl bg-[#C32222] w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             >
               {isLoading ? "Deleting..." : "Delete"}
             </button>
@@ -420,35 +420,13 @@ function AddProfileEntryModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer px-8 py-4 bg-bg2 w-fit text-text1 font-semibold hover:opacity-75"
+            className="cursor-pointer px-6 py-3 rounded-xl bg-bg1 w-fit text-text1 font-semibold hover:bg-bg2 disabled:opacity-50 border border-text2"
             disabled={isLoading}
           >
             Cancel
           </button>
         </div>
       </form>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-          success: {
-            iconTheme: {
-              primary: "#4ade80",
-              secondary: "#fff",
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: "#ef4444",
-              secondary: "#fff",
-            },
-          },
-        }}
-      />
     </div>
   );
 }

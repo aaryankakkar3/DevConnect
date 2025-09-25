@@ -322,7 +322,7 @@ function page({ accountType }: { accountType: string }) {
                 onClick={() => {
                   setPhase(1);
                 }}
-                className={`px-6 py-3 bg-bg1 text-text1 border border-text2 w-fit h-fit rounded-xl hover:bg-bg2 cursor-pointer`}
+                className={`px-6 py-3 font-semibold bg-bg1 text-text1 border border-text2 w-fit h-fit rounded-xl hover:bg-bg2 cursor-pointer`}
               >
                 Go back
               </button>
@@ -331,7 +331,7 @@ function page({ accountType }: { accountType: string }) {
                   handlePhaseTwoSubmit();
                 }}
                 disabled={loading}
-                className={`px-6 py-3 bg-accent text-bg1 w-fit h-fit rounded-xl ${
+                className={`px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl ${
                   loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:opacity-70 cursor-pointer"

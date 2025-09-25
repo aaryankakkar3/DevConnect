@@ -60,15 +60,15 @@ function page() {
 
   return (
     <div>
-      <div className="p-5 flex flex-col gap-5">
+      <div className="p-6 flex flex-col gap-6">
         <Navbar />
-        <div className="flex flex-col gap-5 items-left">
+        <div className="flex flex-col gap-6 items-left">
           <div className="flex items-center justify-center w-full">
             <ProfileAccountNav currentPage="Account Settings" />
           </div>
-          <div className="h-fit flex flex-col gap-3 w-fit">
-            <div className="flex flex-row gap-2">
-              <div className="flex flex-col gap-1 px-12 py-3 bg-bg2 rounded-xl cursor-pointer">
+          <div className="h-fit flex flex-col gap-4 w-fit">
+            <div className="flex flex-row gap-2 w-120">
+              <div className="flex flex-col gap-1 p-5 bg-bg2 rounded-xl cursor-pointer w-full">
                 <p className="text-text2">Email</p>
                 <p className="">{currentUser?.email}</p>
               </div>
@@ -81,8 +81,8 @@ function page() {
                 Change
               </button>
             </div>
-            <div className="flex flex-row gap-2 w-full">
-              <div className="flex flex-col gap-1 px-12 py-3 bg-bg2 rounded-xl w-full cursor-pointer">
+            <div className="flex flex-row gap-2 w-120">
+              <div className="flex flex-col gap-1 p-5 bg-bg2 rounded-xl w-full cursor-pointer">
                 <p className="text-text2">Password</p>
                 <p className="">*************************</p>
               </div>

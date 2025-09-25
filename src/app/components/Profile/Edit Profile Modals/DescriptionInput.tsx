@@ -26,7 +26,7 @@ function DescriptionInput({
       Description
       <textarea
         ref={textareaRef}
-        className="p-4 bg-bg2 focus:outline-none focus:ring-0 resize-none min-h-[59px]"
+        className="p-5 bg-bg1 border border-text2 rounded-xl resize-none min-h-[59px]"
         value={value}
         onChange={onChange}
         onInput={adjustHeight}
