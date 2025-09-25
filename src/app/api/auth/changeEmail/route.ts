@@ -5,15 +5,11 @@ import { prisma } from "@/db/prismaClient";
 
 export async function POST(request: NextRequest) {
   try {
-    const { client, response } = createClient(request, NextResponse.next());
+    // Get authenticated user info from middleware headers
+    const userId = request.headers.get("x-user-id");
+    const userEmail = request.headers.get("x-user-email");
 
-    // Check if user is logged in
-    const {
-      data: { user },
-      error: userError,
-    } = await client.auth.getUser();
-
-    if (userError || !user) {
+    if (!userId || !userEmail) {
       return NextResponse.json(
         { errorMessage: "You must be logged in to change your email" },
         { status: 401 }
@@ -41,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if email is the same as current
-    if (user.email === newEmail) {
+    if (userEmail === newEmail) {
       return NextResponse.json(
         { errorMessage: "New email must be different from current email" },
         { status: 400 }
@@ -60,7 +56,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update email with Supabase
+    // Create Supabase client and update email
+    const { client } = createClient(request, NextResponse.next());
     const { error: updateError } = await client.auth.updateUser({
       email: newEmail,
     });

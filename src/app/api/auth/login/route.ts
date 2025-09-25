@@ -7,18 +7,8 @@ import { Clearance } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
+    // No need to check if user is already logged in - middleware handles it!
     const { client, response } = createClient(request, NextResponse.next());
-
-    // Check if user is already logged in
-    const {
-      data: { user },
-    } = await client.auth.getUser();
-    if (user) {
-      return NextResponse.json(
-        { errorMessage: "User is already logged in" },
-        { status: 400 }
-      );
-    }
 
     const body = await request.json();
     const { email, principal, password, isClient } = body;

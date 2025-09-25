@@ -4,15 +4,10 @@ import { handleError } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const { client, response } = createClient(request, NextResponse.next());
+    // Get authenticated user info from middleware headers
+    const userId = request.headers.get("x-user-id");
 
-    // Check if user is logged in
-    const {
-      data: { user },
-      error: userError,
-    } = await client.auth.getUser();
-
-    if (userError || !user) {
+    if (!userId) {
       return NextResponse.json(
         { errorMessage: "You must be logged in to change your password" },
         { status: 401 }
@@ -72,7 +67,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update password with Supabase
+    // Create Supabase client and update password
+    const { client } = createClient(request, NextResponse.next());
     const { error: updateError } = await client.auth.updateUser({
       password: newPassword,
     });

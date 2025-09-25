@@ -20,15 +20,7 @@ export function useCurrentUser() {
     try {
       setLoading(true);
 
-      // Create client-side Supabase client to refresh session
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
-      // Refresh session to get latest user data (including email changes)
-      await supabase.auth.refreshSession();
-
+      // The API call now gets user data from middleware headers (no database call needed!)
       const response = await fetch("/api/auth/current-user", {
         credentials: "include",
       });
