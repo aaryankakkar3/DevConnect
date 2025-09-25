@@ -52,7 +52,7 @@ function NavItem({
       onMouseLeave={onMouseLeave}
     >
       <button
-        className="flex flex-row gap-1 justify-center items-center hover:font-semibold group"
+        className="flex cursor-pointer flex-row gap-1 justify-center items-center hover:font-semibold group"
         onClick={onClick}
       >
         {IconComponent && (
@@ -75,7 +75,7 @@ function NavItem({
               <button
                 key={index}
                 onClick={item.onClick}
-                className="block w-full text-left pr-2 py-1 hover:underline first:rounded-t-xl last:rounded-b-xl transition-colors whitespace-nowrap"
+                className="block cursor-pointer w-full text-left pr-2 py-1 hover:underline first:rounded-t-xl last:rounded-b-xl transition-colors whitespace-nowrap"
               >
                 {item.label}
               </button>
@@ -124,7 +124,11 @@ function Navbar() {
       </div>
       <div className="rounded-full text-text1 flex flex-row gap-6">
         {currentUser?.clearance == "dev" && (
-          <NavItem icon="Globe" label="Browse" />
+          <NavItem
+            icon="Globe"
+            label="Browse"
+            onClick={() => router.push("/browse")}
+          />
         )}
         {currentUser?.clearance == "dev" && (
           <NavItem
@@ -133,6 +137,7 @@ function Navbar() {
             isHovered={hoveredItem === "bids"}
             onMouseEnter={() => setHoveredItem("bids")}
             onMouseLeave={() => setHoveredItem(null)}
+            onClick={() => router.push("/my-bids")}
           />
         )}
         {currentUser?.clearance == "client" && (
@@ -142,6 +147,7 @@ function Navbar() {
             isHovered={hoveredItem === "projects"}
             onMouseEnter={() => setHoveredItem("projects")}
             onMouseLeave={() => setHoveredItem(null)}
+            onClick={() => router.push("/my-projects")}
           />
         )}
 
@@ -152,6 +158,7 @@ function Navbar() {
           isHovered={hoveredItem === "user"}
           onMouseEnter={() => setHoveredItem("user")}
           onMouseLeave={() => setHoveredItem(null)}
+          onClick={() => router.push(`/profile/${currentUser?.username}`)}
         />
       </div>
     </div>
