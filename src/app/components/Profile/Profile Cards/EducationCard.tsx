@@ -35,7 +35,7 @@ function EducationCard({
   };
 
   return (
-    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
+    <div className="relative flex flex-col h-full p-3 gap-2 border-2 border-bg2">
       <div className="font-semibold text-xl text-center leading-tight">
         {(() => {
           switch (degree) {

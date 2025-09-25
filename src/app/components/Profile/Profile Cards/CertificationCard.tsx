@@ -32,8 +32,8 @@ function CertificationCard({
   };
 
   return (
-    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
-      <div className="text-xl text-center flex flex-col gap-0 font-semibold">
+    <div className="relative flex flex-col h-full p-3 gap-2 border-2 border-bg2">
+      <div className="text-xl text-center flex flex-col gap-0 font-semibold leading-tight">
         {title}
         <span className="text-base">by {issuingOrganization}</span>
       </div>

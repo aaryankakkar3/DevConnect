@@ -32,7 +32,7 @@ function WorkCard({
   };
 
   return (
-    <div className="relative flex flex-col h-full p-3 gap-1 border-2 border-bg2">
+    <div className="relative flex flex-col h-full p-3 gap-2 border-2 border-bg2">
       <div className="text-xl text-center leading-tight">
         {title}
         <br />@{company}

@@ -8,6 +8,7 @@ interface CurrentUser {
   email: string;
   id: string;
   clearance?: string;
+  profilePicture?: string;
 }
 
 export function useCurrentUser() {

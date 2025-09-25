@@ -12,7 +12,7 @@ function ReviewCard({
   imageUrl: string;
 }) {
   return (
-    <div className="flex flex-col h-full p-3 gap-1 border-2 border-bg2">
+    <div className="flex flex-col h-full p-3 gap-2 border-2 border-bg2">
       <div className="flex flex-row items-center gap-3">
         <img
           src={imageUrl}
