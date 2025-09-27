@@ -3,9 +3,11 @@ import React, { useEffect, useRef } from "react";
 function DescriptionInput({
   value,
   onChange,
+  label,
 }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  label?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -23,7 +25,7 @@ function DescriptionInput({
 
   return (
     <label className="flex flex-col gap-1 w-full">
-      Description
+      {label ? label : "Description"}
       <textarea
         ref={textareaRef}
         className="p-5 bg-bg1 border border-text2 rounded-xl resize-none min-h-[59px]"

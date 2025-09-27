@@ -14,7 +14,7 @@ const SingleInputField = ({
       {label}
       <input
         type={type}
-        className="p-5 border border-text2 rounded-xl"
+        className="p-5 border border-text2 rounded-xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
         value={value}
         onChange={onChange}
       />
