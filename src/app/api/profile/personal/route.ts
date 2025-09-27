@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { clearCachedUserData } from "../../../../lib/cache";
 
 const prisma = new PrismaClient();
 
@@ -56,6 +57,10 @@ export async function PUT(request: NextRequest) {
         username: true,
       },
     });
+
+    // Clear cache so next request gets fresh data
+    await clearCachedUserData(userId);
+    console.log("Cleared cache for user:", userId, "after profile update");
 
     return NextResponse.json(
       {

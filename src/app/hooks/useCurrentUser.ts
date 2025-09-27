@@ -11,16 +11,33 @@ interface CurrentUser {
   profilePicture?: string;
 }
 
+// Client-side cache for user data (in-memory)
+let clientCache: {
+  user: CurrentUser | null;
+  timestamp: number;
+  expiry: number;
+} | null = null;
+
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 export function useCurrentUser() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = async (forceRefresh = false) => {
     try {
+      // Check client-side cache first (unless forced refresh)
+      if (!forceRefresh && clientCache && Date.now() < clientCache.expiry) {
+        setCurrentUser(clientCache.user);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
 
-      // The API call now gets user data from middleware headers (no database call needed!)
+      // Fetch from API - this will now use Redis cache on server-side
       const response = await fetch("/api/auth/current-user", {
         credentials: "include",
       });
@@ -35,18 +52,29 @@ export function useCurrentUser() {
           // User is not authenticated or not found in database - this is expected, not an error
           setCurrentUser(null);
           setError(null);
+          clientCache = null; // Clear cache
           return;
         }
         throw new Error(`Failed to fetch current user: ${response.status}`);
       }
 
       const result = await response.json();
-      setCurrentUser(result.user);
+      const userData = result.user;
+
+      // Update client-side cache
+      clientCache = {
+        user: userData,
+        timestamp: Date.now(),
+        expiry: Date.now() + CACHE_DURATION,
+      };
+
+      setCurrentUser(userData);
       setError(null); // Clear any previous errors on success
     } catch (err) {
       console.error("Error fetching current user:", err);
       setCurrentUser(null); // Ensure user is null on error
       setError(err instanceof Error ? err.message : "Unknown error");
+      clientCache = null; // Clear cache on error
     } finally {
       setLoading(false);
     }
@@ -56,10 +84,15 @@ export function useCurrentUser() {
     fetchCurrentUser();
   }, []);
 
-  // Function to manually refresh user data
+  // Function to manually refresh user data (bypassing cache)
   const refreshUser = () => {
-    fetchCurrentUser();
+    fetchCurrentUser(true);
   };
 
-  return { currentUser, loading, error, refreshUser };
+  // Function to clear cache (useful when user logs out or updates profile)
+  const clearCache = () => {
+    clientCache = null;
+  };
+
+  return { currentUser, loading, error, refreshUser, clearCache };
 }

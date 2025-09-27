@@ -1,57 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../db/prismaClient";
+import { getCachedUserData, setCachedUserData } from "../../../../lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all user info from middleware headers (no database call needed!)
+    // Get basic user info from middleware headers
     const userId = request.headers.get("x-user-id");
     const userEmail = request.headers.get("x-user-email");
-    const username = request.headers.get("x-user-username");
-    const clearance = request.headers.get("x-user-clearance");
-    const profilePicture = request.headers.get("x-user-profile-picture");
 
     if (!userId || !userEmail) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // If middleware provided incomplete data, fallback to database
-    if (!username && !clearance) {
-      console.warn("Middleware headers incomplete, falling back to database");
+    // Try to get additional user data from Redis cache first
+    const cachedData = await getCachedUserData(userId);
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          username: true,
-          clearance: true,
-          profilePicture: true,
-        },
-      });
-
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-
+    if (cachedData) {
       return NextResponse.json({
         success: true,
         user: {
           id: userId,
           email: userEmail,
-          username: user.username,
-          clearance: user.clearance,
-          profilePicture: user.profilePicture,
+          username: cachedData.username,
+          clearance: cachedData.clearance,
+          profilePicture: cachedData.profilePicture,
         },
       });
     }
 
-    // Use data from middleware headers (much faster!)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        username: true,
+        clearance: true,
+        profilePicture: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Update cache with fetched data
+    const cacheData = {
+      username: user.username || "",
+      clearance: user.clearance || "",
+      profilePicture: user.profilePicture || "",
+    };
+
+    await setCachedUserData(userId, cacheData);
+    console.log("💾 Cached data for user:", userId, "Data:", cacheData);
+
     return NextResponse.json({
       success: true,
       user: {
         id: userId,
         email: userEmail,
-        username: username || "",
-        clearance: clearance || "",
-        profilePicture: profilePicture || undefined,
+        username: user.username,
+        clearance: user.clearance,
+        profilePicture: user.profilePicture,
       },
     });
   } catch (error) {

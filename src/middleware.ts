@@ -69,55 +69,12 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    // Fetch full user data from database to include in headers
-    try {
-      const { PrismaClient } = await import("@prisma/client");
-      const prisma = new PrismaClient();
+    // Add basic user info to request headers (Redis will handle additional data)
+    const response = NextResponse.next();
+    response.headers.set("x-user-id", userId);
+    response.headers.set("x-user-email", userEmail || "");
 
-      const userFromDb = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          username: true,
-          clearance: true,
-          profilePicture: true,
-        },
-      });
-
-      await prisma.$disconnect();
-
-      if (!userFromDb) {
-        // User exists in auth but not in database - this shouldn't happen
-        return NextResponse.json(
-          { error: "User not found in database" },
-          { status: 404 }
-        );
-      }
-
-      // Add full user info to request headers
-      const response = NextResponse.next();
-      response.headers.set("x-user-id", userId);
-      response.headers.set("x-user-email", userEmail || "");
-      response.headers.set("x-user-username", userFromDb.username || "");
-      response.headers.set("x-user-clearance", userFromDb.clearance || "");
-      response.headers.set(
-        "x-user-profile-picture",
-        userFromDb.profilePicture || ""
-      );
-
-      return response;
-    } catch (dbError) {
-      console.error("Database error in middleware:", dbError);
-
-      // Fallback: continue with basic user info
-      const response = NextResponse.next();
-      response.headers.set("x-user-id", userId);
-      response.headers.set("x-user-email", userEmail || "");
-      response.headers.set("x-user-username", "");
-      response.headers.set("x-user-clearance", "");
-      response.headers.set("x-user-profile-picture", "");
-
-      return response;
-    }
+    return response;
   } catch (error) {
     console.error("Middleware error:", error);
 
