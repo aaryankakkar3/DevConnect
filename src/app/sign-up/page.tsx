@@ -8,17 +8,9 @@ import AuthPasswordInput from "../components/Auth/AuthPasswordInput";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useComponentRouteProtection } from "../hooks/useComponentRouteProtection";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 function page({ accountType }: { accountType: string }) {
-  const {
-    user,
-    loading: pageLoading,
-    shouldShowContent,
-  } = useComponentRouteProtection({
-    requireGuest: true,
-    redirectTo: "/",
-  });
   const router = useRouter();
   const [signupFormData, setSignupFormData] = React.useState({
     fullName: "",
@@ -199,151 +191,143 @@ function page({ accountType }: { accountType: string }) {
     }
   };
 
-  // Show blank screen while checking authentication
-  if (pageLoading) {
-    return <div></div>;
-  }
-
-  // Don't show content if user shouldn't see this page
-  if (!shouldShowContent) {
-    return <div></div>;
-  }
-
   return (
-    <div className="flex flex-row gap-0 p-6 h-screen">
-      <AuthLeftHalf
-        type="signup"
-        text="Sign up to hire talent or find work. Get started in just a few minutes."
-      />
-      <div className="w-[50%] h-full flex items-center justify-center">
-        {phase == 1 && (
-          <div className="w-120 h-fit flex flex-col gap-4">
-            <SwitchAuthTypeComponent
-              accountType={authAccountType}
-              setAccountType={setAuthAccountType}
-            />
-            <div className="w-full h-fit flex flex-col gap-4">
-              <AuthSingleInput
-                type="text"
-                label="Full Name"
-                value={signupFormData.fullName}
-                onChange={(e) =>
-                  setSignupFormData({
-                    ...signupFormData,
-                    fullName: e.target.value,
-                  })
-                }
+    <ProtectedRoute requireGuest={true} redirectTo="/">
+      <div className="flex flex-row gap-0 p-6 h-screen">
+        <AuthLeftHalf
+          type="signup"
+          text="Sign up to hire talent or find work. Get started in just a few minutes."
+        />
+        <div className="w-[50%] h-full flex items-center justify-center">
+          {phase == 1 && (
+            <div className="w-120 h-fit flex flex-col gap-4">
+              <SwitchAuthTypeComponent
+                accountType={authAccountType}
+                setAccountType={setAuthAccountType}
               />
-              <AuthSingleInput
-                type="text"
-                label="Email"
-                value={signupFormData.email}
-                onChange={(e) =>
-                  setSignupFormData({
-                    ...signupFormData,
-                    email: e.target.value,
-                  })
-                }
-              />
-              <AuthSingleInput
-                type="text"
-                label="Phone Number"
-                value={signupFormData.phoneNumber}
-                onChange={(e) =>
-                  setSignupFormData({
-                    ...signupFormData,
-                    phoneNumber: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <button
-              onClick={() => {
-                handlePhaseOneSubmit();
-              }}
-              disabled={loading}
-              className={`px-6 py-3 bg-accent text-bg1 w-fit h-fit rounded-xl ml-auto cursor-pointer ${
-                loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-70"
-              }`}
-            >
-              {loading ? "Validating..." : "Continue"}
-            </button>
-
-            <p className="mx-auto text-center">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-accent cursor-pointer hover:underline"
-              >
-                Login
-              </Link>
-            </p>
-          </div>
-        )}
-        {phase == 2 && (
-          <div className="w-120 h-fit flex flex-col gap-4">
-            <div className="w-full h-fit flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
+              <div className="w-full h-fit flex flex-col gap-4">
                 <AuthSingleInput
                   type="text"
-                  label="Username"
-                  value={signupFormData2.username}
+                  label="Full Name"
+                  value={signupFormData.fullName}
                   onChange={(e) =>
-                    setSignupFormData2({
-                      ...signupFormData2,
-                      username: e.target.value,
+                    setSignupFormData({
+                      ...signupFormData,
+                      fullName: e.target.value,
+                    })
+                  }
+                />
+                <AuthSingleInput
+                  type="text"
+                  label="Email"
+                  value={signupFormData.email}
+                  onChange={(e) =>
+                    setSignupFormData({
+                      ...signupFormData,
+                      email: e.target.value,
+                    })
+                  }
+                />
+                <AuthSingleInput
+                  type="text"
+                  label="Phone Number"
+                  value={signupFormData.phoneNumber}
+                  onChange={(e) =>
+                    setSignupFormData({
+                      ...signupFormData,
+                      phoneNumber: e.target.value,
                     })
                   }
                 />
               </div>
-              <AuthPasswordInput
-                label="Password"
-                value={signupFormData2.password}
-                onChange={(e) =>
-                  setSignupFormData2({
-                    ...signupFormData2,
-                    password: e.target.value,
-                  })
-                }
-              />
-              <AuthPasswordInput
-                label="Confirm Password"
-                value={signupFormData2.confirmPassword}
-                onChange={(e) =>
-                  setSignupFormData2({
-                    ...signupFormData2,
-                    confirmPassword: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="flex flex-row gap-2 w-full justify-end">
               <button
                 onClick={() => {
-                  setPhase(1);
-                }}
-                className={`px-6 py-3 font-semibold bg-bg1 text-text1 border border-text2 w-fit h-fit rounded-xl hover:bg-bg2 cursor-pointer`}
-              >
-                Go back
-              </button>
-              <button
-                onClick={() => {
-                  handlePhaseTwoSubmit();
+                  handlePhaseOneSubmit();
                 }}
                 disabled={loading}
-                className={`px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl ${
-                  loading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:opacity-70 cursor-pointer"
+                className={`px-6 py-3 bg-accent text-bg1 w-fit h-fit rounded-xl ml-auto cursor-pointer ${
+                  loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-70"
                 }`}
               >
-                {loading ? "Creating Account..." : "Sign Up"}
+                {loading ? "Validating..." : "Continue"}
               </button>
+
+              <p className="mx-auto text-center">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="text-accent cursor-pointer hover:underline"
+                >
+                  Login
+                </Link>
+              </p>
             </div>
-          </div>
-        )}
+          )}
+          {phase == 2 && (
+            <div className="w-120 h-fit flex flex-col gap-4">
+              <div className="w-full h-fit flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <AuthSingleInput
+                    type="text"
+                    label="Username"
+                    value={signupFormData2.username}
+                    onChange={(e) =>
+                      setSignupFormData2({
+                        ...signupFormData2,
+                        username: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <AuthPasswordInput
+                  label="Password"
+                  value={signupFormData2.password}
+                  onChange={(e) =>
+                    setSignupFormData2({
+                      ...signupFormData2,
+                      password: e.target.value,
+                    })
+                  }
+                />
+                <AuthPasswordInput
+                  label="Confirm Password"
+                  value={signupFormData2.confirmPassword}
+                  onChange={(e) =>
+                    setSignupFormData2({
+                      ...signupFormData2,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="flex flex-row gap-2 w-full justify-end">
+                <button
+                  onClick={() => {
+                    setPhase(1);
+                  }}
+                  className={`px-6 py-3 font-semibold bg-bg1 text-text1 border border-text2 w-fit h-fit rounded-xl hover:bg-bg2 cursor-pointer`}
+                >
+                  Go back
+                </button>
+                <button
+                  onClick={() => {
+                    handlePhaseTwoSubmit();
+                  }}
+                  disabled={loading}
+                  className={`px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:opacity-70 cursor-pointer"
+                  }`}
+                >
+                  {loading ? "Creating Account..." : "Sign Up"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
 

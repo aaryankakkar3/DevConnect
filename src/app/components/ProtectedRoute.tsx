@@ -1,29 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "./useCurrentUser";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 type RouteProtectionOptions = {
   requireAuth?: boolean;
-  requireGuest?: boolean; // Only for non-authenticated users
+  requireGuest?: boolean;
   requiredClearance?: string[];
   redirectTo?: string;
+  loadingComponent?: React.ReactNode;
 };
 
-export function useComponentRouteProtection(
-  options: RouteProtectionOptions = {}
-) {
+interface ProtectedRouteProps extends RouteProtectionOptions {
+  children: React.ReactNode;
+}
+
+export default function ProtectedRoute({
+  children,
+  loadingComponent,
+  requireAuth = false,
+  requireGuest = false,
+  requiredClearance = [],
+  redirectTo,
+}: ProtectedRouteProps) {
   const { currentUser: user, loading: userLoading } = useCurrentUser();
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
-
-  const {
-    requireAuth = false,
-    requireGuest = false,
-    requiredClearance = [],
-    redirectTo,
-  } = options;
 
   useEffect(() => {
     if (userLoading || isRedirecting) return; // Wait for user data to load
@@ -80,9 +83,16 @@ export function useComponentRouteProtection(
           (c) => c.toLowerCase() === user.clearance?.toLowerCase()
         ))); // Role-based page with correct clearance
 
-  return {
-    user,
-    loading: isLoading,
-    shouldShowContent,
-  };
+  // Show loading screen while checking authentication
+  if (isLoading) {
+    return loadingComponent || <div></div>;
+  }
+
+  // Don't show content if user shouldn't see this page
+  if (!shouldShowContent) {
+    return <div></div>;
+  }
+
+  // Render children with access to user data via context if needed
+  return <>{children}</>;
 }

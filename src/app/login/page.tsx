@@ -8,17 +8,9 @@ import AuthLeftHalf from "../components/Auth/AuthLeftHalf";
 import SwitchAuthTypeComponent from "../components/Auth/SwitchAuthTypeComponent";
 import AuthSingleInput from "../components/Auth/AuthSingleInput";
 import AuthPasswordInput from "../components/Auth/AuthPasswordInput";
-import { useComponentRouteProtection } from "../hooks/useComponentRouteProtection";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 function page({ accountType }: { accountType: string }) {
-  const {
-    user,
-    loading: pageLoading,
-    shouldShowContent,
-  } = useComponentRouteProtection({
-    requireGuest: true,
-    redirectTo: "/",
-  });
   const router = useRouter();
   const [authAccountType, setAuthAccountType] = React.useState(
     accountType || "client"
@@ -80,67 +72,62 @@ function page({ accountType }: { accountType: string }) {
     }
   };
 
-  // Show blank screen while checking authentication
-  if (pageLoading) {
-    return <div></div>;
-  }
-
-  // Don't show content if user shouldn't see this page
-  if (!shouldShowContent) {
-    return <div></div>;
-  }
-
   return (
-    <div className="flex flex-row gap-0 p-6 h-screen">
-      <AuthLeftHalf
-        type="login"
-        text="Login to jump right back into your gig."
-      />
-      <div className="w-[50%] h-full flex items-center justify-center">
-        <div className="w-120 h-fit flex flex-col gap-4">
-          <SwitchAuthTypeComponent
-            accountType={authAccountType}
-            setAccountType={setAuthAccountType}
-          />
-          <div className="w-full h-fit flex flex-col gap-4">
-            <AuthSingleInput
-              type="text"
-              label="Email / Phone Number"
-              value={loginFormData.principal}
-              onChange={(e) =>
-                setLoginFormData({
-                  ...loginFormData,
-                  principal: e.target.value,
-                })
-              }
+    <ProtectedRoute requireGuest={true} redirectTo="/">
+      <div className="flex flex-row gap-0 p-6 h-screen">
+        <AuthLeftHalf
+          type="login"
+          text="Login to jump right back into your gig."
+        />
+        <div className="w-[50%] h-full flex items-center justify-center">
+          <div className="w-120 h-fit flex flex-col gap-4">
+            <SwitchAuthTypeComponent
+              accountType={authAccountType}
+              setAccountType={setAuthAccountType}
             />
-            <AuthPasswordInput
-              label="Password"
-              value={loginFormData.password}
-              onChange={(e) =>
-                setLoginFormData({ ...loginFormData, password: e.target.value })
-              }
-            />
-          </div>
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl hover:opacity-70 ml-auto disabled:opacity-50"
-          >
-            {loading ? "Logging in..." : "Submit"}
-          </button>
-          <p className="mx-auto text-center">
-            Don't have an account?{" "}
-            <Link
-              href="/sign-up"
-              className="text-accent cursor-pointer hover:underline"
+            <div className="w-full h-fit flex flex-col gap-4">
+              <AuthSingleInput
+                type="text"
+                label="Email / Phone Number"
+                value={loginFormData.principal}
+                onChange={(e) =>
+                  setLoginFormData({
+                    ...loginFormData,
+                    principal: e.target.value,
+                  })
+                }
+              />
+              <AuthPasswordInput
+                label="Password"
+                value={loginFormData.password}
+                onChange={(e) =>
+                  setLoginFormData({
+                    ...loginFormData,
+                    password: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              className="px-6 py-3 font-semibold bg-accent text-bg1 w-fit h-fit rounded-xl hover:opacity-70 ml-auto disabled:opacity-50"
             >
-              Sign up
-            </Link>
-          </p>
+              {loading ? "Logging in..." : "Submit"}
+            </button>
+            <p className="mx-auto text-center">
+              Don't have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="text-accent cursor-pointer hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
 
