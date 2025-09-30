@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { verifyUserClearance } from "@/lib/authUtils";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user ID from session headers (set by middleware)
-    const userId = request.headers.get("x-user-id");
+    // Verify user has dev clearance
+    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
 
-    if (!userId) {
+    if (!clearanceCheck.success) {
       return NextResponse.json(
-        { success: false, error: "User not authenticated" },
-        { status: 401 }
+        { success: false, error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
       );
     }
+
+    const userId = clearanceCheck.userId!;
 
     const body = await request.json();
     const {
@@ -61,15 +64,17 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Get authenticated user ID from session headers (set by middleware)
-    const userId = request.headers.get("x-user-id");
+    // Verify user has dev clearance
+    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
 
-    if (!userId) {
+    if (!clearanceCheck.success) {
       return NextResponse.json(
-        { success: false, error: "User not authenticated" },
-        { status: 401 }
+        { success: false, error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
       );
     }
+
+    const userId = clearanceCheck.userId!;
 
     const body = await request.json();
     const {
@@ -137,15 +142,17 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Get authenticated user ID from session headers (set by middleware)
-    const userId = request.headers.get("x-user-id");
+    // Verify user has dev clearance
+    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
 
-    if (!userId) {
+    if (!clearanceCheck.success) {
       return NextResponse.json(
-        { success: false, error: "User not authenticated" },
-        { status: 401 }
+        { success: false, error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
       );
     }
+
+    const userId = clearanceCheck.userId!;
 
     const body = await request.json();
     const { id } = body;

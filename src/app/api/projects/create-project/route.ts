@@ -1,39 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../db/prismaClient";
+import { verifyUserClearance } from "@/lib/authUtils";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get user info from middleware headers
-    const userId = request.headers.get("x-user-id");
-    const userEmail = request.headers.get("x-user-email");
+    // Verify user has client clearance
+    const clearanceCheck = await verifyUserClearance(request, ["client"]);
 
-    if (!userId || !userEmail) {
+    if (!clearanceCheck.success) {
       return NextResponse.json(
-        { error: "Unauthorized - User not authenticated" },
-        { status: 401 }
+        { error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
       );
     }
 
-    // Verify user exists and has client clearance
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        clearance: true,
-        username: true,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    if (user.clearance !== "client") {
-      return NextResponse.json(
-        { error: "Only clients can create projects" },
-        { status: 403 }
-      );
-    }
+    const userId = clearanceCheck.userId!;
 
     // Parse request body
     const body = await request.json();

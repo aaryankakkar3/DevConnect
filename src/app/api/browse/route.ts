@@ -5,8 +5,8 @@ import { verifyUserClearance } from "@/lib/authUtils";
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify user has client clearance
-    const clearanceCheck = await verifyUserClearance(request, ["client"]);
+    // Verify user has dev clearance
+    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
 
     if (!clearanceCheck.success) {
       return NextResponse.json(
@@ -19,22 +19,25 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const sortBy = searchParams.get("sortBy") || "newest";
-    const status = searchParams.get("status") || "open"; // 'open' or 'closed'
     const search = searchParams.get("search") || "";
+
+    // Filter parameters
+    const keywordCondition = searchParams.get("keywordCondition") || "AND";
+    const keywords = searchParams.get("keywords") || "";
+    const skillsCondition = searchParams.get("skillsCondition") || "AND";
+    const skills = searchParams.get("skills") || "";
+    const budgetMin = searchParams.get("budgetMin");
+    const budgetMax = searchParams.get("budgetMax");
+    const bidsMin = searchParams.get("bidsMin");
+    const bidsMax = searchParams.get("bidsMax");
+    const clientRatingMin = searchParams.get("clientRatingMin");
+    const clientRatingMax = searchParams.get("clientRatingMax");
 
     // Build the where clause
     const whereClause: any = {
-      creatorId: userId,
+      status: "open", // Only show open projects for browsing
+      creatorId: { not: userId }, // Don't show user's own projects
     };
-
-    // Filter by status
-    if (status === "open") {
-      whereClause.status = "open";
-    } else if (status === "closed") {
-      whereClause.status = {
-        in: ["assigned", "completed", "cancelled"],
-      };
-    }
 
     // Add search functionality
     if (search.trim()) {
@@ -57,12 +60,54 @@ export async function GET(request: NextRequest) {
             mode: "insensitive",
           },
         },
-        {
-          skills: {
-            hasSome: [search],
-          },
-        },
       ];
+    }
+
+    // Keyword filtering
+    if (keywords.trim()) {
+      const keywordArray = keywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter((k) => k);
+      if (keywordArray.length > 0) {
+        const keywordConditions = keywordArray.map((keyword) => ({
+          OR: [
+            { title: { contains: keyword, mode: "insensitive" } },
+            { shortDesc: { contains: keyword, mode: "insensitive" } },
+            { longDesc: { contains: keyword, mode: "insensitive" } },
+          ],
+        }));
+
+        if (keywordCondition === "AND") {
+          whereClause.AND = (whereClause.AND || []).concat(keywordConditions);
+        } else {
+          whereClause.OR = (whereClause.OR || []).concat(keywordConditions);
+        }
+      }
+    }
+
+    // Skills filtering
+    if (skills.trim()) {
+      const skillsArray = skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s);
+      if (skillsArray.length > 0) {
+        if (skillsCondition === "AND") {
+          // All skills must be present
+          whereClause.skills = { hasEvery: skillsArray };
+        } else {
+          // Any of the skills must be present
+          whereClause.skills = { hasSome: skillsArray };
+        }
+      }
+    }
+
+    // Budget filtering
+    if (budgetMin || budgetMax) {
+      whereClause.budget = {};
+      if (budgetMin) whereClause.budget.gte = parseInt(budgetMin);
+      if (budgetMax) whereClause.budget.lte = parseInt(budgetMax);
     }
 
     // Build the orderBy clause
@@ -111,8 +156,37 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Filter by bids count if specified
+    let filteredProjects = projects;
+    if (bidsMin || bidsMax) {
+      filteredProjects = projects.filter((project) => {
+        const bidCount = project.bids.length;
+        if (bidsMin && bidCount < parseInt(bidsMin)) return false;
+        if (bidsMax && bidCount > parseInt(bidsMax)) return false;
+        return true;
+      });
+    }
+
+    // Filter by client rating if specified
+    if (clientRatingMin || clientRatingMax) {
+      filteredProjects = filteredProjects.filter((project) => {
+        const reviews = project.creator.receivedReviews;
+        const totalRating = reviews.reduce(
+          (sum, review) => sum + review.rating,
+          0
+        );
+        const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+
+        if (clientRatingMin && avgRating < parseFloat(clientRatingMin))
+          return false;
+        if (clientRatingMax && avgRating > parseFloat(clientRatingMax))
+          return false;
+        return true;
+      });
+    }
+
     // Transform the data to match frontend expectations
-    const transformedProjects = projects.map((project) => {
+    const transformedProjects = filteredProjects.map((project) => {
       // Calculate client rating and count
       const reviews = project.creator.receivedReviews;
       const totalRating = reviews.reduce(

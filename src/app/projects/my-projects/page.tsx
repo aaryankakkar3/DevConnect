@@ -6,6 +6,8 @@ import Navbar from "@/app/components/Navbar";
 import SingleInputField from "@/app/components/Profile/Edit Profile Modals/SingleInputField";
 import { ChevronDown, Star } from "lucide-react";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
+import ResultsFoundAndSort from "@/app/components/ResultsFoundAndSort";
+import ProjectsList from "@/app/components/ProjectsList";
 
 interface Project {
   id: string;
@@ -26,7 +28,6 @@ function page() {
     React.useState("Open Projects");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [sortBy, setSortBy] = React.useState("newest");
-  const [sortDropdownOpen, setSortDropdownOpen] = React.useState(false);
 
   // API state management
   const [projects, setProjects] = useState<Project[]>([]);
@@ -69,12 +70,17 @@ function page() {
   useEffect(() => {
     const status = currentSelection === "Open Projects" ? "open" : "closed";
     fetchProjects(sortBy, searchQuery, status);
-  }, [sortBy, currentSelection]);
+  }, [currentSelection, sortBy]);
 
   // Handle search button click
   const handleSearch = () => {
     const status = currentSelection === "Open Projects" ? "open" : "closed";
     fetchProjects(sortBy, searchQuery, status);
+  };
+
+  // Handle sort change from ResultsFoundAndSort component
+  const handleSortChange = (newSortBy: string) => {
+    setSortBy(newSortBy);
   };
 
   function Nav() {
@@ -106,30 +112,6 @@ function page() {
       </div>
     );
   }
-
-  function SortDropDownButton({
-    forValue,
-    forLabel,
-  }: {
-    forValue: string;
-    forLabel: string;
-  }) {
-    return (
-      <button
-        onClick={() => {
-          setSortBy(forValue);
-          setSortDropdownOpen(false);
-        }}
-        className={`w-full px-4 py-2 text-left hover:bg-bg2 ${
-          sortBy === forValue
-            ? "bg-accent text-bg1 hover:bg-accent"
-            : "text-text1"
-        }`}
-      >
-        {forLabel}
-      </button>
-    );
-  }
   return (
     <ProtectedRoute requireAuth={true} requiredClearance={["client"]}>
       <div className="p-6 flex flex-col gap-6">
@@ -151,57 +133,11 @@ function page() {
           </button>
         </div>
         <div className="flex flex-col gap-0 w-full rounded-xl border border-text2">
-          <div className="p-6 flex flex-row justify-between items-center border-b border-text2">
-            <p className="">{projects.length} results found</p>
-            <div className="flex flex-row gap-1 items-center relative">
-              <p className="">Sort by:</p>
-              <div className="relative">
-                <button
-                  onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="px-2 py-1 gap-2 w-fit hover:bg-bg2 hover:text-text1 border border-text2 flex justify-between items-center cursor-pointer"
-                >
-                  {sortBy === "newest" && "Newest First"}
-                  {sortBy === "oldest" && "Oldest First"}
-                  {sortBy === "budget-high" && "Budget: High to Low"}
-                  {sortBy === "budget-low" && "Budget: Low to High"}
-                  {sortBy === "title" && "Title A-Z"}
-                  <ChevronDown
-                    className={`w-4 h-4 ${
-                      sortDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {sortDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-1 bg-bg1 border border-text2 z-10">
-                    <SortDropDownButton
-                      forLabel="Newest First"
-                      forValue="newest"
-                    />
-                    <SortDropDownButton
-                      forLabel="Oldest First"
-                      forValue="oldest"
-                    />
-                    <SortDropDownButton
-                      forLabel="Budget: High to Low"
-                      forValue="budget-high"
-                    />
-                    <SortDropDownButton
-                      forLabel="Budget: Low to High"
-                      forValue="budget-low"
-                    />
-                    <SortDropDownButton
-                      forLabel="Highest Bids"
-                      forValue="bids-high"
-                    />
-                    <SortDropDownButton
-                      forLabel="Lowest Bids"
-                      forValue="bids-low"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <ResultsFoundAndSort
+            resultsCount={projects.length}
+            sortBy={sortBy}
+            onSortChange={handleSortChange}
+          />
           {loading ? (
             <div className="p-6 text-center">Loading projects...</div>
           ) : error ? (
@@ -209,38 +145,8 @@ function page() {
           ) : projects.length === 0 ? (
             <div className="p-6 text-center">No projects found</div>
           ) : (
-            projects.map((project: Project, index: number) => (
-              <div
-                key={project.id}
-                className="p-6 flex flex-col gap-2 border-b border-text2 last:border-b-0"
-              >
-                <div className="flex flex-row justify-between">
-                  <h1 className="text-accent text-2xl ">{project.title}</h1>
-                  <p className="">
-                    {project.bidCount} bids | Posted {project.postedTime}
-                  </p>
-                </div>
-                <p>Budget - {project.budget}</p>
-                <p className="font-semibold">{project.skills.join(" | ")}</p>
-                <p className="">{project.shortDesc}</p>
-                <div className="flex flex-row gap-1 items-center ">
-                  <div className="flex flex-row gap-0 items-center">
-                    {Array.from({ length: 5 }, (_, i) => {
-                      const rating = parseFloat(project.clientRating);
-                      const isFilled = i < Math.floor(rating);
-                      return (
-                        <Star
-                          key={i}
-                          strokeWidth={1}
-                          fill={isFilled ? "#F7DA00" : "none"}
-                          size={16}
-                        />
-                      );
-                    })}
-                  </div>
-                  ({project.ratingCount})
-                </div>
-              </div>
+            projects.map((project: Project) => (
+              <ProjectsList key={project.id} project={project} />
             ))
           )}
         </div>
