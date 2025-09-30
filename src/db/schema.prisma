@@ -48,7 +48,8 @@ model Project {
   status      ProjectStatus @default(open)
   createdAt   DateTime      @default(now())
   creatorId   String
-  details     String
+  shortDesc   String        @default("")
+  longDesc    String        @default("")
   developerId String?
   bids        Bid[]
   creator     User          @relation("ProjectCreator", fields: [creatorId], references: [id])

@@ -95,8 +95,11 @@ function Navbar() {
   const projectCount = 5;
 
   const bidsDropdown = [
-    { label: "My bids", onClick: () => router.push("/my-bids") },
-    { label: "Buy bid tokens", onClick: () => router.push("/buy-bid-tokens") },
+    { label: "My bids", onClick: () => router.push("/bids/my-bids") },
+    {
+      label: "Buy bid tokens",
+      onClick: () => router.push("/bids/buy-bid-tokens"),
+    },
   ];
 
   const userDropdown = [
@@ -109,12 +112,18 @@ function Navbar() {
   ];
 
   const projectsDropdown = [
-    { label: "My Projects", onClick: () => router.push("/my-projects") },
+    {
+      label: "My Projects",
+      onClick: () => router.push("/projects/my-projects"),
+    },
     {
       label: "Buy Project Tokens",
-      onClick: () => router.push("/buy-project-tokens"),
+      onClick: () => router.push("/projects/buy-project-tokens"),
     },
-    { label: "Create Project", onClick: () => router.push("/create-project") },
+    {
+      label: "Create Project",
+      onClick: () => router.push("/projects/create-project"),
+    },
   ];
 
   return (
