@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { Star } from "lucide-react";
 import PlaceBidModal from "@/app/components/Project/PlaceBidModal";
+import toast from "react-hot-toast";
 
 interface PageProps {
   params: Promise<{
@@ -20,6 +21,7 @@ interface ProjectData {
   shortDescription: string;
   budget: string;
   skills: string[];
+  bidCount: number;
   client: {
     id: string;
     name: string;
@@ -27,6 +29,13 @@ interface ProjectData {
     rating: number;
     ratingCount: number;
   };
+}
+
+interface BidData {
+  price: number;
+  details: string;
+  completionTime: number;
+  bidTime: Date;
 }
 
 function ProjectPage({ params }: PageProps) {
@@ -37,6 +46,11 @@ function ProjectPage({ params }: PageProps) {
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Bid state
+  const [hasBid, setHasBid] = useState(false);
+  const [bidData, setBidData] = useState<BidData | null>(null);
+  const [bidLoading, setBidLoading] = useState(false);
 
   // Fetch project data from API
   useEffect(() => {
@@ -64,29 +78,76 @@ function ProjectPage({ params }: PageProps) {
       }
     };
 
+    const checkBid = async () => {
+      if (currentUser?.clearance !== "dev") return;
+
+      try {
+        setBidLoading(true);
+        const response = await fetch(`/api/bids/checkifbid?projectId=${id}`);
+
+        if (!response.ok) {
+          console.error("Failed to check bid status");
+          toast.error("Failed to check your bid status");
+          return;
+        }
+
+        const data = await response.json();
+        setHasBid(data.hasBid);
+
+        if (data.bid) {
+          setBidData({
+            price: data.bid.price,
+            details: data.bid.details,
+            completionTime: data.bid.completionTime,
+            bidTime: new Date(data.bid.bidTime),
+          });
+        }
+      } catch (err) {
+        console.error("Error checking bid:", err);
+        toast.error("An error occurred while checking your bid status");
+      } finally {
+        setBidLoading(false);
+      }
+    };
+
     if (id) {
       fetchProject();
+      checkBid();
     }
-  }, [id]);
+  }, [id, currentUser?.clearance]);
 
-  const bid = {
-    bidder: {
-      name: "Aaryan Kakkar",
-      rating: 4.8,
-      ratingCount: 15,
-      username: "aaryan_kakkar",
-      profilePicture:
-        "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pexels.com%2Fsearch%2Fprofile%2520picture%2F&psig=AOvVaw3MaNL3OSjOP8CDMSk8VXXX&ust=1759397091274000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCPiNkIfXgpADFQAAAAAdAAAAABAE",
-    },
-    price: "500",
-    bidTime: new Date("2003-10-15T14:30:00"),
-    details:
-      "Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it. Hello, I am interested in your project and would like to bid on it.",
-    completionTime: 5,
+  // Function to refresh bid data
+  const refreshBidData = async () => {
+    if (currentUser?.clearance !== "dev") return;
+
+    try {
+      setBidLoading(true);
+      const response = await fetch(`/api/bids/checkifbid?projectId=${id}`);
+
+      if (!response.ok) {
+        console.error("Failed to check bid status");
+        return;
+      }
+
+      const data = await response.json();
+      setHasBid(data.hasBid);
+
+      if (data.bid) {
+        setBidData({
+          price: data.bid.price,
+          details: data.bid.details,
+          completionTime: data.bid.completionTime,
+          bidTime: new Date(data.bid.bidTime),
+        });
+      }
+    } catch (err) {
+      console.error("Error checking bid:", err);
+    } finally {
+      setBidLoading(false);
+    }
   };
 
   const isOwner = currentUser?.id === projectData?.client.id;
-  const ifBidded = false;
 
   function BudgetSkillsComponent() {
     if (!projectData) return null;
@@ -169,7 +230,10 @@ function ProjectPage({ params }: PageProps) {
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
         <div className="flex flex-col gap-4 p-6 border border-text2 rounded-xl">
-          <h1 className="text-5xl">{projectData.title}</h1>
+          <div className="flex flex-row justify-between">
+            <h1 className="text-5xl">{projectData.title}</h1>
+            <p className="text-5xl text-text2">{projectData.bidCount} bids</p>
+          </div>
           {isOwner ? (
             <BudgetSkillsComponent />
           ) : (
@@ -204,23 +268,26 @@ function ProjectPage({ params }: PageProps) {
               </div>
             </label>
           )}
-          {/* Conditional to ifBidded */}
-          {currentUser?.clearance == "dev" && ifBidded && (
+          {/* Conditional to hasBid */}
+          {currentUser?.clearance == "dev" && hasBid && bidData && (
             <div className="text-center flex flex-col gap-2">
               My Bid
               <div className="bg-bg2 w-full h-fit p-5 rounded-xl text-left">
-                <div className="w-full h-50 bg-bg1 rounded-xl p-5 flex flex-col gap-3">
+                <div className="w-full bg-bg1 rounded-xl p-5 flex flex-col gap-3">
                   <div className="text-xl flex flex-row gap-3">
-                    <p className="font-semibold">${bid.price}</p>
-                    <p className="">{bid.completionTime} day delivery</p>
+                    <p className="font-semibold">${bidData.price}</p>
+                    <p className="">{bidData.completionTime} day delivery</p>
                   </div>
-                  <p className="">{bid.details}</p>
-                  <p className="">Created at: {bid.bidTime.toLocaleString()}</p>
+                  <p className="">{bidData.details}</p>
+                  <p className="">
+                    Created at: {bidData.bidTime.toLocaleString()}
+                  </p>
                 </div>
               </div>
             </div>
           )}
-          {currentUser?.clearance == "dev" && !ifBidded && (
+          {currentUser?.clearance == "client" && isOwner && <div></div>}
+          {currentUser?.clearance == "dev" && !hasBid && !bidLoading && (
             <button
               onClick={() => {
                 setIsBidModalOpen(true);
@@ -233,7 +300,10 @@ function ProjectPage({ params }: PageProps) {
         </div>
         {isBidModalOpen && (
           <PlaceBidModal
-            onClose={() => setIsBidModalOpen(false)}
+            onClose={() => {
+              setIsBidModalOpen(false);
+              refreshBidData(); // Refresh bid data after modal closes
+            }}
             projectId={projectData.id}
           />
         )}

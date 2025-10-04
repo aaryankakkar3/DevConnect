@@ -1,6 +1,7 @@
 import React from "react";
 import SingleInputField from "../Profile/Edit Profile Modals/SingleInputField";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function PlaceBidModal({
   onClose,
@@ -14,6 +15,7 @@ function PlaceBidModal({
     completionTime: "",
     details: "",
   });
+  const router = useRouter();
   const handleSubmit = async () => {
     // Validate form data
     if (!bidData.amount || !bidData.completionTime || !bidData.details.trim()) {
@@ -64,6 +66,7 @@ function PlaceBidModal({
       toast.error("An error occurred while placing your bid");
     } finally {
       setIsLoading(false);
+      router.push("/project/" + projectId);
     }
   };
   const [isLoading, setIsLoading] = React.useState(false);

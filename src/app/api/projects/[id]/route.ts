@@ -15,7 +15,7 @@ export async function GET(
       );
     }
 
-    // Fetch project with creator (client) details
+    // Fetch project with creator (client) details and bid count
     const project = await prisma.project.findUnique({
       where: { id },
       include: {
@@ -30,6 +30,11 @@ export async function GET(
                 rating: true,
               },
             },
+          },
+        },
+        bids: {
+          select: {
+            id: true,
           },
         },
       },
@@ -47,6 +52,9 @@ export async function GET(
         ? reviews.reduce((sum, review) => sum + review.rating, 0) / ratingCount
         : 0;
 
+    // Get bid count
+    const bidCount = project.bids.length;
+
     // Format the response to match your component's expected structure
     const formattedProject = {
       id: project.id,
@@ -55,6 +63,7 @@ export async function GET(
       shortDescription: project.shortDesc,
       budget: project.budget.toString(), // Convert to string to match your component
       skills: project.skills, // Already an array
+      bidCount: bidCount,
       client: {
         id: project.creator.id,
         name: project.creator.name || "Unknown User",
