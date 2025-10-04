@@ -21,7 +21,9 @@ function ProjectsList({ project }: { project: Project }) {
       className="p-6 flex flex-col gap-2 border-b border-text2 last:border-b-0 "
     >
       <div className="flex flex-row justify-between">
-        <h1 className="text-accent text-2xl ">{project.title}</h1>
+        <a className="text-accent text-2xl " href={`/project/${project.id}`}>
+          {project.title}
+        </a>
         <p className="">
           {project.bidCount} bids | Posted {project.postedTime}
         </p>
