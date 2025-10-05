@@ -21,7 +21,10 @@ function ProjectsList({ project }: { project: Project }) {
       className="p-6 flex flex-col gap-2 border-b border-text2 last:border-b-0 "
     >
       <div className="flex flex-row justify-between">
-        <a className="text-accent text-2xl " href={`/project/${project.id}`}>
+        <a
+          className="text-accent text-2xl hover:underline"
+          href={`/project/${project.id}`}
+        >
           {project.title}
         </a>
         <p className="">

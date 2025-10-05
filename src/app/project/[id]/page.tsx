@@ -12,6 +12,7 @@ interface PageProps {
   params: Promise<{
     id: string;
   }>;
+  projectData?: ProjectData;
 }
 
 interface ProjectData {
@@ -38,13 +39,29 @@ interface BidData {
   bidTime: Date;
 }
 
-function ProjectPage({ params }: PageProps) {
+interface ProjectBid {
+  id: string;
+  price: number;
+  details: string;
+  completionTime: number;
+  bidTime: Date;
+  bidder: {
+    name: string;
+    username: string;
+    rating: number;
+    ratingCount: number;
+  };
+}
+
+function ProjectPage({ params, projectData: propProjectData }: PageProps) {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const { currentUser } = useCurrentUser();
   const { id } = React.use(params);
 
-  const [projectData, setProjectData] = useState<ProjectData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [projectData, setProjectData] = useState<ProjectData | null>(
+    propProjectData || null
+  );
+  const [loading, setLoading] = useState(!propProjectData); // Only load if no props provided
   const [error, setError] = useState<string | null>(null);
 
   // Bid state
@@ -52,9 +69,18 @@ function ProjectPage({ params }: PageProps) {
   const [bidData, setBidData] = useState<BidData | null>(null);
   const [bidLoading, setBidLoading] = useState(false);
 
+  // Project bids state (for clients to view all bids)
+  const [projectBids, setProjectBids] = useState<ProjectBid[]>([]);
+  const [bidsLoading, setBidsLoading] = useState(false);
+
+  const isOwner = currentUser?.id === projectData?.client.id;
+
   // Fetch project data from API
   useEffect(() => {
     const fetchProject = async () => {
+      // Skip fetching if project data is already provided via props
+      if (propProjectData) return;
+
       try {
         setLoading(true);
         const response = await fetch(`/api/projects/${id}`);
@@ -110,11 +136,42 @@ function ProjectPage({ params }: PageProps) {
       }
     };
 
+    const fetchProjectBids = async () => {
+      if (currentUser?.clearance !== "client" || !isOwner) return;
+
+      try {
+        setBidsLoading(true);
+        const response = await fetch(`/api/bids/projectbids?projectId=${id}`);
+
+        if (!response.ok) {
+          console.error("Failed to fetch project bids");
+          toast.error("Failed to load project bids");
+          return;
+        }
+
+        const data = await response.json();
+        const formattedBids = data.map((bid: any) => ({
+          ...bid,
+          bidTime: new Date(bid.bidTime),
+        }));
+        setProjectBids(formattedBids);
+      } catch (err) {
+        console.error("Error fetching project bids:", err);
+        toast.error("An error occurred while loading project bids");
+      } finally {
+        setBidsLoading(false);
+      }
+    };
     if (id) {
       fetchProject();
-      checkBid();
+      if (currentUser?.clearance === "dev") {
+        checkBid();
+      }
+      if (currentUser?.clearance === "client" && isOwner) {
+        fetchProjectBids();
+      }
     }
-  }, [id, currentUser?.clearance]);
+  }, [id, currentUser?.clearance, propProjectData, isOwner]);
 
   // Function to refresh bid data
   const refreshBidData = async () => {
@@ -146,8 +203,6 @@ function ProjectPage({ params }: PageProps) {
       setBidLoading(false);
     }
   };
-
-  const isOwner = currentUser?.id === projectData?.client.id;
 
   function BudgetSkillsComponent() {
     if (!projectData) return null;
@@ -268,14 +323,15 @@ function ProjectPage({ params }: PageProps) {
               </div>
             </label>
           )}
-          {/* Conditional to hasBid */}
           {currentUser?.clearance == "dev" && hasBid && bidData && (
             <div className="text-center flex flex-col gap-2">
               My Bid
               <div className="bg-bg2 w-full h-fit p-5 rounded-xl text-left">
                 <div className="w-full bg-bg1 rounded-xl p-5 flex flex-col gap-3">
                   <div className="text-xl flex flex-row gap-3">
-                    <p className="font-semibold">${bidData.price}</p>
+                    <p className="font-semibold text-accent">
+                      ${bidData.price}
+                    </p>
                     <p className="">{bidData.completionTime} day delivery</p>
                   </div>
                   <p className="">{bidData.details}</p>
@@ -286,7 +342,60 @@ function ProjectPage({ params }: PageProps) {
               </div>
             </div>
           )}
-          {currentUser?.clearance == "client" && isOwner && <div></div>}
+          {currentUser?.clearance == "client" &&
+            isOwner &&
+            projectBids.length > 0 && (
+              <div className="text-center flex flex-col gap-2">
+                Bids
+                <div className="bg-bg2 w-full h-fit p-5 rounded-xl text-left flex flex-col gap-3">
+                  {projectBids.map((bidsInstance) => (
+                    <div
+                      key={bidsInstance.id}
+                      className="w-full bg-bg1 rounded-xl p-5 flex flex-col gap-3"
+                    >
+                      <div className="text-xl flex flex-row gap-3">
+                        <a
+                          href={`/profile/${bidsInstance.bidder.username}`}
+                          className="font-bold hover:underline"
+                        >
+                          {bidsInstance.bidder.name}
+                        </a>
+                        <div className="flex flex-row gap-1 items-center">
+                          <div className="flex flex-row gap-0.5 items-center">
+                            {bidsInstance.bidder.rating}
+                            <Star
+                              className="w-4 h-4 mb-0.5"
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          ({bidsInstance.bidder.ratingCount})
+                        </div>
+                      </div>
+                      <div className="text-xl flex flex-row gap-3">
+                        <p className="font-semibold text-accent">
+                          ${bidsInstance.price}
+                        </p>
+                        <p className="">
+                          {bidsInstance.completionTime} day delivery
+                        </p>
+                      </div>
+                      <p className="">{bidsInstance.details}</p>
+                      <p className="">
+                        Created at: {bidsInstance.bidTime.toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          {currentUser?.clearance == "client" && isOwner && bidsLoading && (
+            <div className="text-center flex flex-col gap-2">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                <div className="h-20 bg-gray-300 rounded"></div>
+              </div>
+            </div>
+          )}
           {currentUser?.clearance == "dev" && !hasBid && !bidLoading && (
             <button
               onClick={() => {
