@@ -1,5 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
+import ProjectBid from "./Project/ProjectBid";
 
 interface Project {
   id: string;
@@ -12,9 +13,16 @@ interface Project {
   clientRating: string;
   ratingCount: string;
   status: string;
+  bidData?: any | null;
 }
 
-function ProjectsList({ project }: { project: Project }) {
+function ProjectsList({
+  project,
+  isMyBids,
+}: {
+  project: Project;
+  isMyBids?: boolean;
+}) {
   return (
     <div
       key={project.id}
@@ -51,6 +59,11 @@ function ProjectsList({ project }: { project: Project }) {
         </div>
         ({project.ratingCount})
       </div>
+      {isMyBids && (
+        <div className="p-5 bg-bg2 rounded-xl">
+          <ProjectBid bidsInstance={project.bidData} isMyBids={isMyBids} />
+        </div>
+      )}
     </div>
   );
 }

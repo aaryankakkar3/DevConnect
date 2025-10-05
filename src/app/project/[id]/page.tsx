@@ -7,6 +7,7 @@ import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { Star } from "lucide-react";
 import PlaceBidModal from "@/app/components/Project/PlaceBidModal";
 import toast from "react-hot-toast";
+import ProjectBid from "@/app/components/Project/ProjectBid";
 
 interface PageProps {
   params: Promise<{
@@ -349,41 +350,10 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
                 Bids
                 <div className="bg-bg2 w-full h-fit p-5 rounded-xl text-left flex flex-col gap-3">
                   {projectBids.map((bidsInstance) => (
-                    <div
+                    <ProjectBid
                       key={bidsInstance.id}
-                      className="w-full bg-bg1 rounded-xl p-5 flex flex-col gap-3"
-                    >
-                      <div className="text-xl flex flex-row gap-3">
-                        <a
-                          href={`/profile/${bidsInstance.bidder.username}`}
-                          className="font-bold hover:underline"
-                        >
-                          {bidsInstance.bidder.name}
-                        </a>
-                        <div className="flex flex-row gap-1 items-center">
-                          <div className="flex flex-row gap-0.5 items-center">
-                            {bidsInstance.bidder.rating}
-                            <Star
-                              className="w-4 h-4 mb-0.5"
-                              strokeWidth={1.5}
-                            />
-                          </div>
-                          ({bidsInstance.bidder.ratingCount})
-                        </div>
-                      </div>
-                      <div className="text-xl flex flex-row gap-3">
-                        <p className="font-semibold text-accent">
-                          ${bidsInstance.price}
-                        </p>
-                        <p className="">
-                          {bidsInstance.completionTime} day delivery
-                        </p>
-                      </div>
-                      <p className="">{bidsInstance.details}</p>
-                      <p className="">
-                        Created at: {bidsInstance.bidTime.toLocaleString()}
-                      </p>
-                    </div>
+                      bidsInstance={bidsInstance}
+                    />
                   ))}
                 </div>
               </div>

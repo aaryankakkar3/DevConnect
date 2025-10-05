@@ -132,13 +132,11 @@ function Navbar() {
         <span className="text-accent">Dev</span> Connect
       </div>
       <div className="rounded-full text-text1 flex flex-row gap-6">
-        {currentUser?.clearance == "dev" && (
-          <NavItem
-            icon="Globe"
-            label="Browse"
-            onClick={() => router.push("/browse")}
-          />
-        )}
+        <NavItem
+          icon="Globe"
+          label="Browse"
+          onClick={() => router.push("/browse")}
+        />
         {currentUser?.clearance == "dev" && (
           <NavItem
             label={`(${bidCount}) Bids`}

@@ -6,7 +6,10 @@ import { verifyUserClearance } from "@/lib/authUtils";
 export async function GET(request: NextRequest) {
   try {
     // Verify user has dev clearance
-    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
+    const clearanceCheck = await verifyUserClearance(request, [
+      "dev",
+      "client",
+    ]);
 
     if (!clearanceCheck.success) {
       return NextResponse.json(
@@ -36,7 +39,6 @@ export async function GET(request: NextRequest) {
     // Build the where clause
     const whereClause: any = {
       status: "open", // Only show open projects for browsing
-      creatorId: { not: userId }, // Don't show user's own projects
     };
 
     // Add search functionality

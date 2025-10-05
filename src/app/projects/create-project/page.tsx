@@ -77,7 +77,7 @@ function page() {
       }
 
       toast.success("Project created successfully!");
-      router.push("/my-projects");
+      router.push("/projects/my-projects");
     } catch (error) {
       console.error("Error creating project:", error);
       toast.error("An error occurred while creating the project");

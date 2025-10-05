@@ -111,11 +111,7 @@ function page() {
     fetchProjects();
   };
   return (
-    <ProtectedRoute
-      requireAuth={true}
-      redirectTo="/login"
-      requiredClearance={["dev"]}
-    >
+    <ProtectedRoute requireAuth={true} redirectTo="/login">
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
         <div className="flex flex-row gap-2">
