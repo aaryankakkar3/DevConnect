@@ -94,5 +94,49 @@ export function useCurrentUser() {
     clientCache = null;
   };
 
-  return { currentUser, loading, error, refreshUser, clearCache };
+  // Function to handle complete logout - clears cache and Supabase session
+  const logout = async () => {
+    try {
+      // Clear client-side cache immediately
+      clearCache();
+      setCurrentUser(null);
+
+      // Create Supabase client to clear browser session
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+
+      // Sign out from Supabase (clears cookies/session)
+      await supabase.auth.signOut();
+
+      // Call server-side logout to clean up server session and cookies
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Important: include cookies
+      });
+
+      // Clear any additional browser storage
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if logout fails, ensure user state is cleared
+      clearCache();
+      setCurrentUser(null);
+
+      // Clear storage even on error
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+    }
+  };
+
+  return { currentUser, loading, error, refreshUser, clearCache, logout };
 }

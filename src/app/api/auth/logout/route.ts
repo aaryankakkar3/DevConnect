@@ -6,24 +6,56 @@ export async function POST(request: NextRequest) {
   try {
     const { client } = createClient(request);
 
-    // Check if user is logged in
-    const {
-      data: { user },
-    } = await client.auth.getUser();
-    if (!user) {
-      return NextResponse.json(
-        { errorMessage: "No active session found" },
-        { status: 401 }
-      );
-    }
-
+    // Always attempt to sign out, regardless of current session state
+    // This ensures we clear any existing session/cookies
     const { error } = await client.auth.signOut();
 
-    if (error) throw error;
+    // Create response with success
+    const response = NextResponse.json({ errorMessage: null });
 
-    return NextResponse.json({ errorMessage: null });
+    // Explicitly clear all Supabase auth cookies
+    const cookieNames = [
+      "sb-eyrhfxzszwpdwwtztjch-auth-token",
+      "sb-fvufpmynsbgaltxlsrpf-auth-token",
+      "sb-eyrhfxzszwpdwwtztjch-auth-token-code-verifier",
+      "sb-fvufpmynsbgaltxlsrpf-auth-token-code-verifier",
+    ];
+
+    cookieNames.forEach((cookieName) => {
+      response.cookies.set(cookieName, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        expires: new Date(0), // Set expiry to past date
+        path: "/",
+      });
+    });
+
+    return response;
   } catch (error) {
-    const errorResponse = handleError(error);
-    return NextResponse.json(errorResponse, { status: 400 });
+    // Even if logout fails, we return success and clear cookies
+    console.log("Logout error (non-critical):", error);
+
+    const response = NextResponse.json({ errorMessage: null });
+
+    // Still clear cookies even on error
+    const cookieNames = [
+      "sb-eyrhfxzszwpdwwtztjch-auth-token",
+      "sb-fvufpmynsbgaltxlsrpf-auth-token",
+      "sb-eyrhfxzszwpdwwtztjch-auth-token-code-verifier",
+      "sb-fvufpmynsbgaltxlsrpf-auth-token-code-verifier",
+    ];
+
+    cookieNames.forEach((cookieName) => {
+      response.cookies.set(cookieName, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        expires: new Date(0),
+        path: "/",
+      });
+    });
+
+    return response;
   }
 }

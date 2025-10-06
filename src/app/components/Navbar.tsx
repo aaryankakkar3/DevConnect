@@ -10,22 +10,6 @@ const iconMap: Record<string, LucideIcon> = {
   HelpCircle,
 };
 
-const handleLogout = async () => {
-  try {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Redirect to login page or handle successful logout
-    window.location.href = "/login";
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
-
 function NavItem({
   icon,
   label,
@@ -89,10 +73,22 @@ function NavItem({
 
 function Navbar() {
   const router = useRouter();
-  const { currentUser } = useCurrentUser();
+  const { currentUser, logout } = useCurrentUser();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const bidCount = 15;
   const projectCount = 5;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Use replace to prevent back button issues and force a fresh page load
+      window.location.replace("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still redirect even if logout fails
+      window.location.replace("/login");
+    }
+  };
 
   const bidsDropdown = [
     { label: "My bids", onClick: () => router.push("/bids/my-bids") },
@@ -158,7 +154,11 @@ function Navbar() {
           />
         )}
 
-        <NavItem icon="Search" label="Search devs" />
+        <NavItem
+          icon="Search"
+          label="Search devs"
+          onClick={() => router.push("/search-devs")}
+        />
         <NavItem
           label={currentUser?.username || "User"}
           dropdownItems={userDropdown}

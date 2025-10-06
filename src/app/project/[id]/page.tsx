@@ -299,8 +299,8 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
                 Client
                 <div className="flex flex-col gap-1 border border-text2 flex-1 rounded-xl justify-center items-start p-5">
                   <p>{projectData.client.name}</p>
-                  <div className="flex flex-row gap-1 items-center">
-                    <div className="flex flex-row gap-0 items-center">
+                  <div className="flex flex-row gap-1.5 items-center">
+                    <div className="flex flex-row gap-0.5 items-center">
                       {projectData.client.rating}
                       <Star className="w-4 h-4" strokeWidth={1.5} />
                     </div>
