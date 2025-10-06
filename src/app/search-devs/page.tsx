@@ -96,28 +96,38 @@ function page() {
         {devs.map((dev) => (
           <div
             key={dev.username}
-            className="flex flex-col gap-2 p-6 border-b border-text2"
+            className="flex flex-row gap-4 p-6 border-b border-text2 items-center"
           >
-            <div className="flex flex-row gap-2 text-xl">
-              <a
-                href={`/profile/${dev.username}`}
-                className="text-accent hover:underline"
-              >
-                {dev.name}
-              </a>
-              <p className="text-text2">{dev.username}</p>
-            </div>
-            <p className="">
-              {dev.dob} | {dev.location} | {dev.gender}
-            </p>
-            <p className="font-semibold">{dev.skills.join(" | ")}</p>
-            <p className="">{dev.description}</p>
-            <div className="flex flex-row gap-1.5 items-center">
-              <div className="flex flex-row gap-0.5 items-center">
-                {dev.rating}
-                <Star className="w-4 h-4" strokeWidth={1.5} />
+            <img
+              src={
+                dev.profilePic ||
+                "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3396.jpg?semt=ais_hybrid&w=740&q=80"
+              }
+              alt=""
+              className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+            />
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-2 text-xl">
+                <a
+                  href={`/profile/${dev.username}`}
+                  className="text-accent hover:underline"
+                >
+                  {dev.name}
+                </a>
+                <p className="text-text2">{dev.username}</p>
               </div>
-              ({dev.ratingCount})
+              <p className="">
+                {dev.dob} | {dev.location} | {dev.gender}
+              </p>
+              <p className="font-semibold">{dev.skills.join(" | ")}</p>
+              <p className="">{dev.description}</p>
+              <div className="flex flex-row gap-1.5 items-center">
+                <div className="flex flex-row gap-0.5 items-center">
+                  {dev.rating}
+                  <Star className="w-4 h-4" strokeWidth={1.5} />
+                </div>
+                ({dev.ratingCount})
+              </div>
             </div>
           </div>
         ))}
