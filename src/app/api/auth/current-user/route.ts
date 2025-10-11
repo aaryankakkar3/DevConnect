@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
           username: cachedData.username,
           clearance: cachedData.clearance,
           profilePicture: cachedData.profilePicture,
+          tokenCount: cachedData.tokenCount || 0,
         },
       });
     }
@@ -34,6 +35,8 @@ export async function GET(request: NextRequest) {
         username: true,
         clearance: true,
         profilePicture: true,
+        bidTokenCount: true,
+        projectTokenCount: true,
       },
     });
 
@@ -41,11 +44,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Determine token count based on clearance
+    const tokenCount =
+      user.clearance === "dev" ? user.bidTokenCount : user.projectTokenCount;
+
     // Update cache with fetched data
     const cacheData = {
       username: user.username || "",
       clearance: user.clearance || "",
       profilePicture: user.profilePicture || "",
+      tokenCount: tokenCount,
     };
 
     await setCachedUserData(userId, cacheData);
@@ -59,6 +67,7 @@ export async function GET(request: NextRequest) {
         username: user.username,
         clearance: user.clearance,
         profilePicture: user.profilePicture,
+        tokenCount: tokenCount,
       },
     });
   } catch (error) {

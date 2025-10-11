@@ -73,47 +73,49 @@ function Sidebar({
               Clear
             </button>
           </div>
-          <div className="flex flex-col gap-2 relative">
-            <button
-              onClick={() => {
-                setOpenKeywordsDropdown(!openKeywordsDropdown);
-              }}
-              className="flex items-center p-2.5 cursor-pointer flex-row justify-between border border-text2 rounded-xl w-full"
-            >
-              {keywordFilter.dropdownValue == "AND" && "All of the following"}
-              {keywordFilter.dropdownValue == "OR" && "Any of the following"}
-              <ChevronDown
-                className={`w-4 h-4 ${openKeywordsDropdown && "rotate-180"}`}
-              />
-            </button>
-            {openKeywordsDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-1 flex flex-col gap-0 border border-text2 rounded-xl bg-bg1 z-10 shadow-lg">
-                <button
-                  onClick={() => [
-                    setKeywordFilter({
-                      ...keywordFilter,
-                      dropdownValue: "AND",
-                    }),
-                    setOpenKeywordsDropdown(false),
-                  ]}
-                  className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-t-xl"
-                >
-                  All of the following
-                </button>
-                <button
-                  onClick={() => [
-                    setKeywordFilter({
-                      ...keywordFilter,
-                      dropdownValue: "OR",
-                    }),
-                    setOpenKeywordsDropdown(false),
-                  ]}
-                  className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-b-xl"
-                >
-                  Any of the following
-                </button>
-              </div>
-            )}
+          <div className="flex flex-col gap-2">
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setOpenKeywordsDropdown(!openKeywordsDropdown);
+                }}
+                className="flex items-center p-2.5 cursor-pointer flex-row justify-between border border-text2 rounded-xl w-full"
+              >
+                {keywordFilter.dropdownValue == "AND" && "All of the following"}
+                {keywordFilter.dropdownValue == "OR" && "Any of the following"}
+                <ChevronDown
+                  className={`w-4 h-4 ${openKeywordsDropdown && "rotate-180"}`}
+                />
+              </button>
+              {openKeywordsDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 flex flex-col gap-0 border border-text2 rounded-xl bg-bg1 z-10 shadow-lg">
+                  <button
+                    onClick={() => [
+                      setKeywordFilter({
+                        ...keywordFilter,
+                        dropdownValue: "AND",
+                      }),
+                      setOpenKeywordsDropdown(false),
+                    ]}
+                    className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-t-xl"
+                  >
+                    All of the following
+                  </button>
+                  <button
+                    onClick={() => [
+                      setKeywordFilter({
+                        ...keywordFilter,
+                        dropdownValue: "OR",
+                      }),
+                      setOpenKeywordsDropdown(false),
+                    ]}
+                    className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-b-xl"
+                  >
+                    Any of the following
+                  </button>
+                </div>
+              )}
+            </div>
             <input
               className="p-2.5 border border-text2 rounded-xl w-full"
               type="text"
@@ -189,47 +191,49 @@ function Sidebar({
               Clear
             </button>
           </div>
-          <div className="flex flex-col gap-2 relative">
-            <button
-              onClick={() => {
-                setOpenSkillsDropdown(!openSkillsDropdown);
-              }}
-              className="flex items-center p-2.5 cursor-pointer flex-row justify-between border border-text2 rounded-xl w-full"
-            >
-              {skillsFilter.dropdownValue == "AND" && "All of the following"}
-              {skillsFilter.dropdownValue == "OR" && "Any of the following"}
-              <ChevronDown
-                className={`w-4 h-4 ${openSkillsDropdown && "rotate-180"}`}
-              />
-            </button>
-            {openSkillsDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-1 flex flex-col gap-0 border border-text2 rounded-xl bg-bg1 z-10 shadow-lg">
-                <button
-                  onClick={() => [
-                    setSkillsFilter({
-                      ...skillsFilter,
-                      dropdownValue: "AND",
-                    }),
-                    setOpenSkillsDropdown(false),
-                  ]}
-                  className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-t-xl"
-                >
-                  All of the following
-                </button>
-                <button
-                  onClick={() => [
-                    setSkillsFilter({
-                      ...skillsFilter,
-                      dropdownValue: "OR",
-                    }),
-                    setOpenSkillsDropdown(false),
-                  ]}
-                  className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-b-xl"
-                >
-                  Any of the following
-                </button>
-              </div>
-            )}
+          <div className="flex flex-col gap-2">
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setOpenSkillsDropdown(!openSkillsDropdown);
+                }}
+                className="flex items-center p-2.5 cursor-pointer flex-row justify-between border border-text2 rounded-xl w-full"
+              >
+                {skillsFilter.dropdownValue == "AND" && "All of the following"}
+                {skillsFilter.dropdownValue == "OR" && "Any of the following"}
+                <ChevronDown
+                  className={`w-4 h-4 ${openSkillsDropdown && "rotate-180"}`}
+                />
+              </button>
+              {openSkillsDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 flex flex-col gap-0 border border-text2 rounded-xl bg-bg1 z-10 shadow-lg">
+                  <button
+                    onClick={() => [
+                      setSkillsFilter({
+                        ...skillsFilter,
+                        dropdownValue: "AND",
+                      }),
+                      setOpenSkillsDropdown(false),
+                    ]}
+                    className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-t-xl"
+                  >
+                    All of the following
+                  </button>
+                  <button
+                    onClick={() => [
+                      setSkillsFilter({
+                        ...skillsFilter,
+                        dropdownValue: "OR",
+                      }),
+                      setOpenSkillsDropdown(false),
+                    ]}
+                    className="p-2.5 cursor-pointer hover:bg-bg2 text-left rounded-b-xl"
+                  >
+                    Any of the following
+                  </button>
+                </div>
+              )}
+            </div>
             <input
               className="p-2.5 border border-text2 rounded-xl w-full"
               type="text"

@@ -10,6 +10,7 @@ export interface CachedUserData {
   username: string;
   clearance: string;
   profilePicture: string;
+  tokenCount?: number;
 }
 
 /**

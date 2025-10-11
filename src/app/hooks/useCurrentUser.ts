@@ -9,6 +9,7 @@ interface CurrentUser {
   id: string;
   clearance?: string;
   profilePicture?: string;
+  tokenCount?: number;
 }
 
 // Client-side cache for user data (in-memory)
