@@ -94,7 +94,7 @@ function Navbar() {
     { label: "My bids", onClick: () => router.push("/bids/my-bids") },
     {
       label: "Buy bid tokens",
-      onClick: () => router.push("/bids/buy"),
+      onClick: () => router.push("/buy"),
     },
   ];
 
