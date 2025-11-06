@@ -7,8 +7,10 @@ import DescriptionInput from "../../components/Profile/Edit Profile Modals/Descr
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import toast from "react-hot-toast";
+import ConfirmationModal from "@/app/components/Project/ConfirmationModal";
 
 function page() {
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
@@ -77,12 +79,17 @@ function page() {
       }
 
       toast.success("Project created successfully!");
-      router.push("/projects/my-projects");
+
+      // Reload page to update token count
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error creating project:", error);
       toast.error("An error occurred while creating the project");
     } finally {
       setLoading(false);
+      setIsConfirmationModalOpen(false);
     }
   };
 
@@ -137,7 +144,7 @@ function page() {
           <div className="flex flex-row gap-4 ml-auto">
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={() => setIsConfirmationModalOpen(true)}
               disabled={loading}
               className="cursor-pointer px-6 py-3 rounded-xl bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             >
@@ -154,6 +161,15 @@ function page() {
             </button>
           </div>
         </div>
+        {isConfirmationModalOpen && (
+          <ConfirmationModal
+            type="project"
+            onSubmit={handleSubmit}
+            onClose={() => setIsConfirmationModalOpen(false)}
+            loading={loading}
+            setLoading={setLoading}
+          />
+        )}
       </div>
     </ProtectedRoute>
   );

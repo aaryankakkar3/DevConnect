@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/db/prismaClient";
 import { verifyUserClearance } from "@/lib/authUtils";
+import { clearCachedUserData } from "@/lib/cache";
 
 export async function POST(request: NextRequest) {
   try {
@@ -90,16 +91,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the bid
-    await prisma.bid.create({
-      data: {
-        bidderId: userId,
-        projectId: projectId,
-        price: priceNum,
-        details: details,
-        time: timeNum,
-      },
+    // Check if user has at least 1 bid token
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { bidTokenCount: true },
     });
+
+    if (!user || user.bidTokenCount < 1) {
+      return NextResponse.json(
+        {
+          error:
+            "You don't have enough bid tokens. Please purchase more tokens.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create the bid and decrement bid token count in a transaction
+    await prisma.$transaction([
+      prisma.bid.create({
+        data: {
+          bidderId: userId,
+          projectId: projectId,
+          price: priceNum,
+          details: details,
+          time: timeNum,
+        },
+      }),
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          bidTokenCount: {
+            decrement: 1,
+          },
+        },
+      }),
+    ]);
+
+    // Clear Redis cache so next fetch gets updated token count
+    await clearCachedUserData(userId);
 
     return NextResponse.json(
       { message: "Bid placed successfully" },

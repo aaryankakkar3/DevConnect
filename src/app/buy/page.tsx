@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar";
 import { ChevronDown } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 // Declare Razorpay on window
 declare global {
@@ -17,7 +16,6 @@ declare global {
 
 function page() {
   const { currentUser, refreshUser, loading: userLoading } = useCurrentUser();
-  const router = useRouter();
   const clearance = currentUser?.clearance == "dev" ? "dev" : "client";
   const tokenType = clearance == "dev" ? "bid" : "project";
   const [tokenPackage, setTokenPackage] = React.useState(

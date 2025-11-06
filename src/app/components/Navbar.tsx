@@ -75,8 +75,8 @@ function Navbar() {
   const router = useRouter();
   const { currentUser, logout } = useCurrentUser();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const bidCount = 15;
-  const projectCount = 5;
+  const bidCount = currentUser?.tokenCount;
+  const projectCount = currentUser?.tokenCount;
 
   const handleLogout = async () => {
     try {

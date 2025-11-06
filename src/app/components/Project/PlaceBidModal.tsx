@@ -2,6 +2,7 @@ import React from "react";
 import SingleInputField from "../Profile/Edit Profile Modals/SingleInputField";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import ConfirmationModal from "./ConfirmationModal";
 
 function PlaceBidModal({
   onClose,
@@ -10,6 +11,8 @@ function PlaceBidModal({
   onClose: () => void;
   projectId: string;
 }) {
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
+    React.useState(false);
   const [bidData, setBidData] = React.useState({
     amount: "",
     completionTime: "",
@@ -60,13 +63,16 @@ function PlaceBidModal({
       }
 
       toast.success("Bid placed successfully!");
-      onClose();
+
+      // Reload page to update token count
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error placing bid:", error);
       toast.error("An error occurred while placing your bid");
     } finally {
       setIsLoading(false);
-      router.push("/project/" + projectId);
     }
   };
   const [isLoading, setIsLoading] = React.useState(false);
@@ -100,7 +106,7 @@ function PlaceBidModal({
             type="button"
             className="cursor-pointer px-6 py-3 rounded-xl bg-accent w-fit text-bg1 font-semibold hover:opacity-75 disabled:opacity-50"
             onClick={() => {
-              handleSubmit();
+              setIsConfirmationModalOpen(true);
             }}
             disabled={isLoading}
           >
@@ -118,6 +124,15 @@ function PlaceBidModal({
           </button>
         </div>
       </form>
+      {isConfirmationModalOpen && (
+        <ConfirmationModal
+          type="project"
+          onSubmit={handleSubmit}
+          onClose={() => setIsConfirmationModalOpen(false)}
+          loading={isLoading}
+          setLoading={setIsLoading}
+        />
+      )}
     </div>
   );
 }
