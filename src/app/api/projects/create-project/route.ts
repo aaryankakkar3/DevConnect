@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../db/prismaClient";
 import { verifyUserClearance } from "@/lib/authUtils";
-import { clearCachedUserData } from "@/lib/cache";
 
 export async function POST(request: NextRequest) {
   try {
@@ -101,9 +100,6 @@ export async function POST(request: NextRequest) {
 
       return project;
     });
-
-    // Clear Redis cache so next fetch gets updated token count
-    await clearCachedUserData(userId);
 
     return NextResponse.json(
       {
