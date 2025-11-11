@@ -6,8 +6,12 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify user has dev clearance
-    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
+    // Verify user has dev clearance and is verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev"],
+      ["verified"]
+    );
 
     if (!clearanceCheck.success) {
       return NextResponse.json(
@@ -57,8 +61,12 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Verify user has dev clearance
-    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
+    // Verify user has dev clearance and is verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev"],
+      ["verified"]
+    );
 
     if (!clearanceCheck.success) {
       return NextResponse.json(
@@ -128,8 +136,12 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify user has dev clearance
-    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
+    // Verify user has dev clearance and is verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev"],
+      ["verified"]
+    );
 
     if (!clearanceCheck.success) {
       return NextResponse.json(

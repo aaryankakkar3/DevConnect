@@ -3,8 +3,10 @@ import { toast } from "sonner";
 
 function ProofImageInputField({
   setSelectedImages,
+  label,
 }: {
   setSelectedImages: (files: File[]) => void;
+  label?: string;
 }) {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -29,7 +31,7 @@ function ProofImageInputField({
   };
   return (
     <label className="flex flex-col gap-1 w-full">
-      Proof Image
+      {label || "Proof Image"}
       <div className="p-5 rounded-xl bg-bg1 border border-text2 focus:outline-none focus:ring-0 flex justify-end">
         <input
           type="file"

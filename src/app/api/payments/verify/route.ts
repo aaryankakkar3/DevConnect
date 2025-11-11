@@ -25,11 +25,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
-    // Verify user authentication and get user ID
-    const clearanceCheck = await verifyUserClearance(request, [
-      "dev",
-      "client",
-    ]);
+    // Verify user authentication and get user ID (verified users only)
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev", "client"],
+      ["verified"]
+    );
 
     if (!clearanceCheck.success) {
       return NextResponse.json(

@@ -16,7 +16,7 @@ function page() {
   }, [router, currentUser?.username]);
 
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div></div>
     </ProtectedRoute>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import { useCurrentUser } from "@/app/hooks/useCurrentUser";
 
 interface SidebarProps {
   keywordFilter: { dropdownValue: string; keywords: string };
@@ -38,16 +39,26 @@ function Sidebar({
   setClientRatingFilter,
   onApplyFilters,
 }: SidebarProps) {
+  const { currentUser, logout } = useCurrentUser();
   const [openKeywordsDropdown, setOpenKeywordsDropdown] = React.useState(false);
   const [openSkillsDropdown, setOpenSkillsDropdown] = React.useState(false);
   return (
     <div className="flex flex-col gap-6 w-80">
-      <div className="p-6 gap-3 flex flex-col border border-text2 rounded-xl h-fit">
-        <span className="font-semibold">Bid tokens available: </span>
-        <button className="px-6 py-3 text-bg1 w-fit bg-accent rounded-xl hover:opacity-70 cursor-pointer">
-          Buy bids
-        </button>
-      </div>
+      {currentUser?.clearance == "dev" && (
+        <div className="p-6 gap-3 flex flex-col border border-text2 rounded-xl h-fit">
+          <span className="font-semibold">
+            Bid tokens available: {currentUser?.tokenCount}
+          </span>
+          <button
+            onClick={() => {
+              window.location.href = "/buy";
+            }}
+            className="px-6 py-3 text-bg1 w-fit bg-accent rounded-xl hover:opacity-70 cursor-pointer"
+          >
+            Buy bids
+          </button>
+        </div>
+      )}
       <div className="p-6 gap-6 flex flex-col border border-text2 rounded-xl h-fit">
         <div className="flex flex-row justify-between items-center">
           <span className="text-xl text-center">Filters</span>

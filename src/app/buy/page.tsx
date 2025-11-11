@@ -158,7 +158,7 @@ function page() {
   // Show loading state while user data is being fetched
   if (userLoading) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-6 flex flex-col gap-6 min-h-screen">
           <Navbar />
           <div className="p-6 border border-text2 rounded-xl w-full h-full flex flex-col gap-6">
@@ -172,7 +172,7 @@ function page() {
   }
 
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div className="p-6 flex flex-col gap-6 min-h-screen">
         <Navbar />
         <div className="p-6 border border-text2 rounded-xl w-full h-full flex flex-col gap-6">

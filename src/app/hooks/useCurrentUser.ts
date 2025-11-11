@@ -10,6 +10,7 @@ interface CurrentUser {
   clearance?: string;
   profilePicture?: string;
   tokenCount?: number;
+  verificationStatus?: string;
 }
 
 // Client-side cache for user data (in-memory)

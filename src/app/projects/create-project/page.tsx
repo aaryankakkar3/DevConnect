@@ -97,7 +97,7 @@ function page() {
     <ProtectedRoute
       requireAuth={true}
       requiredClearance={["client"]}
-      redirectTo="/profile"
+      requiredVerification={["verified"]}
     >
       <div className="flex flex-col gap-6 p-6">
         <Navbar />

@@ -41,7 +41,7 @@ function page() {
   }, [refreshUser]);
 
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div>
         <div className="p-6 flex flex-col gap-6">
           <Navbar />

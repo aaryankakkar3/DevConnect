@@ -84,8 +84,8 @@ function MyBids() {
   return (
     <ProtectedRoute
       requireAuth={true}
-      redirectTo="/login"
       requiredClearance={["dev"]}
+      requiredVerification={["verified"]}
     >
       <div className="p-6 flex flex-col gap-6">
         <Navbar />

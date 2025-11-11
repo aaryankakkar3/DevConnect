@@ -113,7 +113,11 @@ function page() {
     );
   }
   return (
-    <ProtectedRoute requireAuth={true} requiredClearance={["client"]}>
+    <ProtectedRoute
+      requireAuth={true}
+      requiredClearance={["client"]}
+      requiredVerification={["verified"]}
+    >
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
         <Nav />

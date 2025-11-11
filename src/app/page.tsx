@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function page() {
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div className="p-6">
         <Navbar />
       </div>

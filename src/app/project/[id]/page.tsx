@@ -229,7 +229,7 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
   // Loading state
   if (loading) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-6 flex flex-col gap-6">
           <Navbar />
           <div className="flex flex-col gap-4 p-6 border border-text2 rounded-xl">
@@ -248,7 +248,7 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
   // Error state
   if (error) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-6 flex flex-col gap-6">
           <Navbar />
           <div className="flex flex-col gap-4 p-6 border border-text2 rounded-xl">
@@ -265,7 +265,7 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
   // Project not found
   if (!projectData) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-6 flex flex-col gap-6">
           <Navbar />
           <div className="flex flex-col gap-4 p-6 border border-text2 rounded-xl">
@@ -282,7 +282,7 @@ function ProjectPage({ params, projectData: propProjectData }: PageProps) {
   }
 
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
         <div className="flex flex-col gap-4 p-6 border border-text2 rounded-xl">

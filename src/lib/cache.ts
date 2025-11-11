@@ -11,6 +11,7 @@ export interface CachedUserData {
   clearance: string;
   profilePicture: string;
   tokenCount?: number;
+  verificationStatus?: string;
 }
 
 /**

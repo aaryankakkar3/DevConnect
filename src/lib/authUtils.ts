@@ -2,18 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/db/prismaClient";
 
 /**
- * Verifies that the authenticated user has the required clearance level
+ * Verifies that the authenticated user has the required clearance level and verification status
  * @param request - The Next.js request object with user headers from middleware
  * @param requiredClearance - Array of acceptable clearance levels (e.g., ['client'] or ['dev', 'admin'])
+ * @param requiredVerification - Optional array of acceptable verification statuses (e.g., ['verified'] or ['requested', 'verified'])
  * @returns Object with verification result and user info
  */
 export async function verifyUserClearance(
   request: NextRequest,
-  requiredClearance: string[]
+  requiredClearance: string[],
+  requiredVerification?: string[]
 ): Promise<{
   success: boolean;
   userId?: string;
   userClearance?: string;
+  verificationStatus?: string;
   error?: string;
 }> {
   try {
@@ -27,12 +30,13 @@ export async function verifyUserClearance(
       };
     }
 
-    // Query database for user's current clearance
+    // Query database for user's current clearance and verification status
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         clearance: true,
         id: true,
+        verificationStatus: true,
       },
     });
 
@@ -53,11 +57,28 @@ export async function verifyUserClearance(
       };
     }
 
-    // Success - user has required clearance
+    // Check if user's verification status matches required level (if specified)
+    if (
+      requiredVerification &&
+      (!user.verificationStatus ||
+        !requiredVerification.includes(user.verificationStatus))
+    ) {
+      return {
+        success: false,
+        error: `Access denied - requires ${requiredVerification.join(
+          " or "
+        )} verification status, but user has ${
+          user.verificationStatus || "no"
+        } verification status`,
+      };
+    }
+
+    // Success - user has required clearance and verification
     return {
       success: true,
       userId: user.id,
       userClearance: user.clearance,
+      verificationStatus: user.verificationStatus,
     };
   } catch (error) {
     console.error("Error verifying user clearance:", error);
@@ -74,9 +95,18 @@ export async function verifyUserClearance(
  */
 export async function requireUserClearance(
   request: NextRequest,
-  requiredClearance: string[]
-): Promise<{ userId: string; userClearance: string }> {
-  const result = await verifyUserClearance(request, requiredClearance);
+  requiredClearance: string[],
+  requiredVerification?: string[]
+): Promise<{
+  userId: string;
+  userClearance: string;
+  verificationStatus: string;
+}> {
+  const result = await verifyUserClearance(
+    request,
+    requiredClearance,
+    requiredVerification
+  );
 
   if (!result.success) {
     throw new Error(result.error || "Clearance verification failed");
@@ -85,6 +115,7 @@ export async function requireUserClearance(
   return {
     userId: result.userId!,
     userClearance: result.userClearance!,
+    verificationStatus: result.verificationStatus || "unverified",
   };
 }
 
@@ -98,10 +129,16 @@ export async function withClearanceCheck(
   handler: (
     request: NextRequest,
     userId: string,
-    userClearance: string
-  ) => Promise<NextResponse>
+    userClearance: string,
+    verificationStatus: string
+  ) => Promise<NextResponse>,
+  requiredVerification?: string[]
 ): Promise<NextResponse> {
-  const result = await verifyUserClearance(request, requiredClearance);
+  const result = await verifyUserClearance(
+    request,
+    requiredClearance,
+    requiredVerification
+  );
 
   if (!result.success) {
     return NextResponse.json(
@@ -110,5 +147,10 @@ export async function withClearanceCheck(
     );
   }
 
-  return handler(request, result.userId!, result.userClearance!);
+  return handler(
+    request,
+    result.userId!,
+    result.userClearance!,
+    result.verificationStatus || "unverified"
+  );
 }

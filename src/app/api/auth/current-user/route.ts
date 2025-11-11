@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
           clearance: cachedData.clearance,
           profilePicture: cachedData.profilePicture,
           tokenCount: cachedData.tokenCount || 0,
+          verificationStatus: cachedData.verificationStatus || "unverified",
         },
       });
     }
@@ -37,6 +38,7 @@ export async function GET(request: NextRequest) {
         profilePicture: true,
         bidTokenCount: true,
         projectTokenCount: true,
+        verificationStatus: true,
       },
     });
 
@@ -54,6 +56,7 @@ export async function GET(request: NextRequest) {
       clearance: user.clearance || "",
       profilePicture: user.profilePicture || "",
       tokenCount: tokenCount,
+      verificationStatus: user.verificationStatus || "unverified",
     };
 
     await setCachedUserData(userId, cacheData);
@@ -68,6 +71,7 @@ export async function GET(request: NextRequest) {
         clearance: user.clearance,
         profilePicture: user.profilePicture,
         tokenCount: tokenCount,
+        verificationStatus: user.verificationStatus,
       },
     });
   } catch (error) {

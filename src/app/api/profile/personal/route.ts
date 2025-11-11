@@ -4,18 +4,25 @@ import { clearCachedUserData } from "../../../../lib/cache";
 
 const prisma = new PrismaClient();
 
+import { verifyUserClearance } from "@/lib/authUtils";
+
 export async function PUT(request: NextRequest) {
   try {
-    // Get authenticated user ID from session headers (set by middleware)
-    const userId = request.headers.get("x-user-id");
+    // Verify user is authenticated and verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev", "client"],
+      ["verified"]
+    );
 
-    if (!userId) {
+    if (!clearanceCheck.success) {
       return NextResponse.json(
-        { success: false, error: "User not authenticated" },
-        { status: 401 }
+        { error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
       );
     }
 
+    const userId = clearanceCheck.userId!;
     const body = await request.json();
     const { name, bio, skills, location, dob, gender, profilePicture } = body;
 

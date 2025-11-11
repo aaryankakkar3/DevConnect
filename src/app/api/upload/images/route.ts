@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { verifyUserClearance } from "@/lib/authUtils";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -10,6 +11,20 @@ cloudinary.config({
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify user is authenticated and verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev", "client"],
+      ["verified"]
+    );
+
+    if (!clearanceCheck.success) {
+      return NextResponse.json(
+        { error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
+      );
+    }
+
     const { images } = await request.json();
 
     if (!images || !Array.isArray(images)) {

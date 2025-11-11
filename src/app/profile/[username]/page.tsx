@@ -164,7 +164,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   // Show loading state
   if (loading) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-10 flex flex-col gap-10">
           <Navbar />
           <div className="flex justify-center items-center h-96">
@@ -178,7 +178,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   // Show error state
   if (error) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-10 flex flex-col gap-10">
           <Navbar />
           <div className="flex justify-center items-center h-96">
@@ -192,7 +192,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   // Show not found if no profile data
   if (!profileData) {
     return (
-      <ProtectedRoute requireAuth={true} redirectTo="/login">
+      <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
         <div className="p-10 flex flex-col gap-10">
           <Navbar />
           <div className="flex justify-center items-center h-96">
@@ -219,7 +219,7 @@ function Profile({ params }: { params: Promise<{ username: string }> }) {
   const isThisADevProfile = profileData.clearance === "dev";
 
   return (
-    <ProtectedRoute requireAuth={true} redirectTo="/login">
+    <ProtectedRoute requireAuth={true} requiredVerification={["verified"]}>
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
         <div className="flex flex-col gap-6 items-center">

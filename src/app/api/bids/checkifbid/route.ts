@@ -4,8 +4,12 @@ import { verifyUserClearance } from "@/lib/authUtils";
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify user has dev clearance
-    const clearanceCheck = await verifyUserClearance(request, ["dev"]);
+    // Verify user has dev clearance and is verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev"],
+      ["verified"]
+    );
 
     if (!clearanceCheck.success) {
       return NextResponse.json(

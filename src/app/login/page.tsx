@@ -88,7 +88,7 @@ function page({ accountType }: { accountType: string }) {
             <div className="w-full h-fit flex flex-col gap-4">
               <AuthSingleInput
                 type="text"
-                label="Email / Phone Number"
+                label="Email"
                 value={loginFormData.principal}
                 onChange={(e) =>
                   setLoginFormData({

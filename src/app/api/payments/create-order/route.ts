@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
+import { verifyUserClearance } from "@/lib/authUtils";
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify user is authenticated and verified
+    const clearanceCheck = await verifyUserClearance(
+      request,
+      ["dev", "client"],
+      ["verified"]
+    );
+
+    if (!clearanceCheck.success) {
+      return NextResponse.json(
+        { error: clearanceCheck.error },
+        { status: clearanceCheck.error?.includes("Unauthorized") ? 401 : 403 }
+      );
+    }
+
     const { amount, tokenCount, tokenType } = await request.json();
 
     // Validate input
