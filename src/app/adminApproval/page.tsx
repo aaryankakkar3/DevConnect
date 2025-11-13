@@ -158,7 +158,6 @@ function page() {
     <ProtectedRoute requireAuth={true} requiredClearance={["admin"]}>
       <div className="p-6 flex flex-col gap-6">
         <Navbar />
-        <h1 className="text-4xl font-bold">User Verification Approval</h1>
 
         {loading && <p>Loading unapproved users...</p>}
 
