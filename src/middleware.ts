@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
   // Guest-only routes (should reject authenticated users)
   const isGuestOnlyRoute =
     pathname === "/api/auth/login" ||
+    pathname === "/api/auth/adminLogin" ||
     pathname === "/api/auth/signup" ||
     pathname === "/api/auth/check-username" ||
     pathname === "/api/auth/validate-signup";
