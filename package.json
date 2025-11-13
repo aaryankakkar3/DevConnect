@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "migrate": "npx prisma generate && npx dotenv -e .env.local -- npx prisma migrate dev --name init",
-    "db:push": "npx prisma generate && npx dotenv -e .env.local -- npx prisma db push"
+    "db:push": "npx prisma generate && npx dotenv -e .env.local -- npx prisma db push",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "schema": "src/db/schema.prisma"
