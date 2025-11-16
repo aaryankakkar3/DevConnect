@@ -82,13 +82,13 @@ function PlaceBidModal({
       <form className="relative z-20 w-180 bg-bg1 border border-text2 flex flex-col p-10 gap-4 max-h-[90vh] overflow-y-auto">
         <h1 className="text-center text-5xl">Place Bid</h1>
         <SingleInputField
-          label="Amount"
+          label="Amount ($)"
           value={bidData.amount}
           onChange={(e) => setBidData({ ...bidData, amount: e.target.value })}
           type="number"
         />
         <SingleInputField
-          label="Completion Time"
+          label="Completion Time (days)"
           value={bidData.completionTime}
           onChange={(e) =>
             setBidData({ ...bidData, completionTime: e.target.value })

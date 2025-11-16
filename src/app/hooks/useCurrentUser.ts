@@ -99,7 +99,17 @@ export function useCurrentUser() {
   // Function to handle complete logout - clears cache and Supabase session
   const logout = async () => {
     try {
-      // Clear client-side cache immediately
+      // IMPORTANT: Call server-side logout FIRST (while session is still valid)
+      // This allows the backend to get the user ID and clear Redis cache
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Important: include cookies
+      });
+
+      // Clear client-side cache
       clearCache();
       setCurrentUser(null);
 
@@ -111,15 +121,6 @@ export function useCurrentUser() {
 
       // Sign out from Supabase (clears cookies/session)
       await supabase.auth.signOut();
-
-      // Call server-side logout to clean up server session and cookies
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Important: include cookies
-      });
 
       // Clear any additional browser storage
       if (typeof window !== "undefined") {

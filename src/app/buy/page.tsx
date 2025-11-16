@@ -15,7 +15,12 @@ declare global {
 }
 
 function page() {
-  const { currentUser, refreshUser, loading: userLoading } = useCurrentUser();
+  const {
+    currentUser,
+    refreshUser,
+    clearCache,
+    loading: userLoading,
+  } = useCurrentUser();
   const clearance = currentUser?.clearance == "dev" ? "dev" : "client";
   const tokenType = clearance == "dev" ? "bid" : "project";
   const [tokenPackage, setTokenPackage] = React.useState(
@@ -122,10 +127,16 @@ function page() {
               throw new Error("Payment verification failed");
             }
 
-            toast.success("Payment successful! Tokens added to your account.");
+            // Clear cache first
+            clearCache();
 
-            // Refetch user data to update token count
-            refreshUser();
+            // Refresh current component's user data
+            await refreshUser();
+
+            // Dispatch custom event to notify other components
+            window.dispatchEvent(new Event("userDataUpdated"));
+
+            toast.success("Payment successful! Tokens added to your account.");
           } catch (error) {
             console.error("Payment verification error:", error);
             toast.error("Payment verification failed. Please contact support.");

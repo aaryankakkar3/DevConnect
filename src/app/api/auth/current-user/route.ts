@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     const cachedData = await getCachedUserData(userId);
 
     if (cachedData) {
+      console.log("✅ Serving from cache for user:", userId, cachedData);
       return NextResponse.json({
         success: true,
         user: {
@@ -29,6 +30,8 @@ export async function GET(request: NextRequest) {
         },
       });
     }
+
+    console.log("📦 Cache miss for user:", userId, "- fetching from database");
 
     const user = await prisma.user.findUnique({
       where: { id: userId },

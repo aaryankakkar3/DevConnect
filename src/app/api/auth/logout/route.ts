@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/db/authServer.ts";
 import { handleError } from "@/lib/utils";
+import { clearCachedUserData } from "@/lib/cache";
 
 export async function POST(request: NextRequest) {
   try {
     const { client } = createClient(request);
+
+    // Get user ID before signing out
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+
+    console.log("Logging out user:", user?.id);
+
+    // Clear the cached user data BEFORE signing out (while we still have the user)
+    if (user?.id) {
+      await clearCachedUserData(user.id);
+      console.log("Cleared cache for user:", user.id);
+    }
 
     // Always attempt to sign out, regardless of current session state
     // This ensures we clear any existing session/cookies

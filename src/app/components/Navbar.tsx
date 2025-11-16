@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Globe, Search, HelpCircle, LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "../hooks/useCurrentUser";
@@ -73,10 +73,22 @@ function NavItem({
 
 function Navbar() {
   const router = useRouter();
-  const { currentUser, logout } = useCurrentUser();
+  const { currentUser, logout, refreshUser, clearCache } = useCurrentUser();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const bidCount = currentUser?.tokenCount;
   const projectCount = currentUser?.tokenCount;
+
+  // Listen for user data updates from other components
+  useEffect(() => {
+    const handleUserDataUpdate = async () => {
+      clearCache();
+      await refreshUser();
+    };
+
+    window.addEventListener("userDataUpdated", handleUserDataUpdate);
+    return () =>
+      window.removeEventListener("userDataUpdated", handleUserDataUpdate);
+  }, [clearCache, refreshUser]);
 
   const handleLogout = async () => {
     try {

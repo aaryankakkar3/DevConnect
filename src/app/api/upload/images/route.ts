@@ -12,10 +12,10 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     // Verify user is authenticated (verification status not required for image uploads)
-    const clearanceCheck = await verifyUserClearance(
-      request,
-      ["dev", "client"]
-    );
+    const clearanceCheck = await verifyUserClearance(request, [
+      "dev",
+      "client",
+    ]);
 
     if (!clearanceCheck.success) {
       return NextResponse.json(
